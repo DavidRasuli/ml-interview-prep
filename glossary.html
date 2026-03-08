@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Deployment Glossary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        nav {
+            background: rgba(0,0,0,0.2);
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 1.5em;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .nav-links a.active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px 40px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+        
+        .search-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .search-box input:focus {
+            border-color: #667eea;
+        }
+        
+        .alphabet-nav {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .alphabet-nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .alphabet-nav a:hover {
+            background: #f7fafc;
+        }
+        
+        .glossary-content {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .letter-section {
+            margin-bottom: 50px;
+        }
+        
+        .letter-header {
+            color: #667eea;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .term {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .term:last-child {
+            border-bottom: none;
+        }
+        
+        .term-name {
+            color: #2d3748;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .term-category {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        .term-definition {
+            color: #4a5568;
+            line-height: 1.7;
+            margin-bottom: 12px;
+            font-size: 1.05em;
+        }
+        
+        .term-context {
+            background: #f7fafc;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            color: #2d3748;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .term-context strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">🚀 ML Deployment Hub</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="stack.html">Deployment Stack</a>
+                <a href="glossary.html" class="active">Glossary</a>
+                <a href="scenarios.html">Scenarios</a>
+                <a href="qa.html">Q&A</a>
+                <a href="visuals.html">Visuals</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="header">
+            <h1>📖 ML Deployment Glossary</h1>
+            <p>Comprehensive reference for all machine learning deployment terms and technologies</p>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search for a term..." onkeyup="filterTerms()">
+        </div>
+        
+        <div class="alphabet-nav">
+            <a href="#A">A</a>
+            <a href="#B">B</a>
+            <a href="#C">C</a>
+            <a href="#F">F</a>
+            <a href="#G">G</a>
+            <a href="#H">H</a>
+            <a href="#I">I</a>
+            <a href="#L">L</a>
+            <a href="#M">M</a>
+            <a href="#O">O</a>
+            <a href="#P">P</a>
+            <a href="#R">R</a>
+            <a href="#S">S</a>
+            <a href="#T">T</a>
+            <a href="#V">V</a>
+        </div>
+        
+        <div class="glossary-content">
+            <!-- A -->
+            <div class="letter-section" id="A">
+                <div class="letter-header">A</div>
+                
+                <div class="term">
+                    <div class="term-name">7B / 13B / 70B (Parameter Counts)</div>
+                    <span class="term-category">Model Terminology</span>
+                    <div class="term-definition">
+                        Shorthand notation for the number of parameters in a neural network. 7B = 7 billion parameters, 13B = 13 billion, 70B = 70 billion. Each parameter is a learned weight (a single number) stored in memory.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Parameter count directly determines model size in memory, inference speed, and capability. A 7B model in FP16 needs ~14GB VRAM (7 billion × 2 bytes). More parameters generally means smarter but slower and more expensive. Common sizes: Small (1B-7B), Medium (13B-30B), Large (70B+).
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">Adapters (LoRA)</div>
+                    <span class="term-category">Fine-tuning Technique</span>
+                    <div class="term-definition">
+                        A method for fine-tuning large models by adding small trainable "adapter" layers while keeping the base model frozen. LoRA (Low-Rank Adaptation) is the most popular adapter technique.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Instead of retraining all billions of parameters (expensive, slow), you only train tiny adapter modules. You can swap adapters to change model behavior without loading entirely new models. Much cheaper and faster than full fine-tuning.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">AMX (Advanced Matrix Extensions)</div>
+                    <span class="term-category">Hardware Acceleration</span>
+                    <div class="term-definition">
+                        Intel's newest CPU instruction set specifically designed for accelerating matrix multiplication operations, which are fundamental to neural network computations.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Makes CPU-based inference much faster for ML workloads. OpenVINO leverages AMX to optimize models for Intel CPUs. Part of the progression: SIMD → AVX-512 → AMX (each generation better for ML).
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">Async/Await</div>
+                    <span class="term-category">Python Concurrency</span>
+                    <div class="term-definition">
+                        Python's cooperative multitasking paradigm that allows a single process to handle multiple I/O-bound operations concurrently without blocking.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Great for orchestration tasks (waiting for GPU, database, API calls) but doesn't solve the GIL problem for CPU-bound work. In ML serving, you'd use async for handling requests while the actual inference runs in C++ (which releases the GIL).
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">AVX-512 (Advanced Vector Extensions)</div>
+                    <span class="term-category">Hardware Acceleration</span>
+                    <div class="term-definition">
+                        Intel's CPU instruction set that can process 512 bits (16 floats) simultaneously in a single instruction. Part of SIMD (Single Instruction, Multiple Data) family.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Speeds up CPU inference by processing multiple numbers at once. OpenVINO automatically uses AVX-512 when optimizing models for Intel CPUs. Makes CPU inference viable for smaller models or when GPUs are too expensive.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- B -->
+            <div class="letter-section" id="B">
+                <div class="letter-header">B</div>
+                
+                <div class="term">
+                    <div class="term-name">Batching (Request Batching)</div>
+                    <span class="term-category">Optimization Technique</span>
+                    <div class="term-definition">
+                        Processing multiple requests simultaneously rather than one at a time. Critical for GPU efficiency because GPUs have thousands of cores that can process many inputs in parallel.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> A GPU processing 1 request uses only 5-10% of its cores (wasteful). Processing 32 requests batched together uses 80-90% of cores and achieves 10-30x better throughput with similar latency. Essential for cost-effective serving - might need 1 GPU with batching vs 30 GPUs without. Triton and vLLM handle batching automatically.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">BF16 (Brain Float 16)</div>
+                    <span class="term-category">Numeric Precision</span>
+                    <div class="term-definition">
+                        Google's 16-bit floating-point format designed specifically for machine learning. Has the same range as FP32 but with reduced precision, making it less prone to overflow than standard FP16.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Same speed/memory benefits as FP16 (2x faster than FP32) but better numerical stability. Becoming increasingly popular, especially for training. Good middle ground between FP32 accuracy and FP16 speed.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- C -->
+            <div class="letter-section" id="C">
+                <div class="letter-header">C</div>
+                
+                <div class="term">
+                    <div class="term-name">C++</div>
+                    <span class="term-category">Programming Language</span>
+                    <div class="term-definition">
+                        High-performance compiled language with direct hardware access. Core language for ML inference runtimes, GPU programming (CUDA), and performance-critical systems.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> TensorRT, ONNX Runtime, and most ML serving backends are written in C++ for maximum performance. You won't write much C++ day-to-day, but you'll deploy and configure C++-based systems. Understanding this helps explain why Python + C++ bindings work so well for ML.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- F -->
+            <div class="letter-section" id="F">
+                <div class="letter-header">F</div>
+                
+                <div class="term">
+                    <div class="term-name">Fine-tuning</div>
+                    <span class="term-category">Model Training</span>
+                    <div class="term-definition">
+                        Taking a pre-trained model and continuing to train it on your specific dataset to specialize it for your particular use case.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Much cheaper than training from scratch. You start with a model that already understands language/images/etc., then teach it your domain-specific knowledge. Your role would be deploying these fine-tuned models, not creating them.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">FP8 (8-bit Floating Point)</div>
+                    <span class="term-category">Numeric Precision</span>
+                    <div class="term-definition">
+                        Cutting-edge 8-bit floating-point format that offers 4x speed improvement and 4x memory reduction compared to FP32. Still experimental but supported by newest GPUs.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Bleeding edge of model optimization. NVIDIA H100 and newer GPUs have hardware support for FP8. More accuracy loss than FP16, but newer models are being designed to handle it. Can dramatically reduce serving costs.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">FP16 (16-bit Floating Point)</div>
+                    <span class="term-category">Numeric Precision</span>
+                    <div class="term-definition">
+                        Half-precision floating-point format that uses 16 bits instead of 32. Industry standard for production inference.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Sweet spot for most production deployments - 2x faster, uses half the VRAM, with negligible accuracy loss. Converting FP32→FP16 is often the first optimization step. Most GPUs have dedicated FP16 hardware (Tensor Cores on NVIDIA).
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">FP32 (32-bit Floating Point)</div>
+                    <span class="term-category">Numeric Precision</span>
+                    <div class="term-definition">
+                        Standard single-precision floating-point format. Default for most training and initial model development. Most accurate but slowest and most memory-intensive.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> What models start as. Your job is often converting FP32 to FP16/BF16/FP8 for production to gain speed/memory without significant accuracy loss. Understanding this tradeoff is crucial for deployment decisions.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- G -->
+            <div class="letter-section" id="G">
+                <div class="letter-header">G</div>
+                
+                <div class="term">
+                    <div class="term-name">g4dn (AWS Instance Type)</div>
+                    <span class="term-category">Cloud Infrastructure</span>
+                    <div class="term-definition">
+                        AWS EC2 instance type with NVIDIA T4 GPUs. Older generation, cost-effective option for ML inference workloads.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Good for smaller models or when cost is primary concern. T4 GPUs are less powerful than newer generations but much cheaper. Common choice for development/staging or lightweight production workloads.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">g5 (AWS Instance Type)</div>
+                    <span class="term-category">Cloud Infrastructure</span>
+                    <div class="term-definition">
+                        AWS EC2 instance type with NVIDIA A10G GPUs. Newer generation with more VRAM and better performance than g4dn.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Common choice for production ML inference. Better performance and more VRAM (24GB) than g4dn, allowing larger models. Price/performance sweet spot for many workloads.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">g6 (AWS Instance Type)</div>
+                    <span class="term-category">Cloud Infrastructure</span>
+                    <div class="term-definition">
+                        AWS EC2 instance type with NVIDIA L4 GPUs. Newest generation optimized for inference with support for newer precision formats (FP8).
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Most efficient for inference, especially with FP8-optimized models. Better performance per dollar for inference workloads. Hardware support for latest optimization techniques.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">GIL (Global Interpreter Lock)</div>
+                    <span class="term-category">Python Limitation</span>
+                    <div class="term-definition">
+                        Python's mechanism that allows only one thread to execute Python bytecode at a time, preventing true parallel execution of Python code on multiple CPU cores.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> The biggest Python scaling challenge. Why you can't just use threading to handle millions of requests. Solutions: multiprocessing (multiple Python processes), async/await (for I/O), or rewriting in Go/Rust. Fortunately, actual ML inference (TensorRT, ONNX) runs in C++ and releases the GIL.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">Go (Golang)</div>
+                    <span class="term-category">Programming Language</span>
+                    <div class="term-definition">
+                        Google's compiled language designed for high-performance concurrent systems. No GIL equivalent, making it excellent for handling many simultaneous requests.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Often used for ML API servers, orchestration layers, and data pipelines where Python's GIL becomes a bottleneck. Faster than Python, easier than C++. Goroutines make concurrent programming straightforward. Limited ML libraries, so used alongside Python rather than replacing it.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">Go Routines</div>
+                    <span class="term-category">Concurrency Pattern</span>
+                    <div class="term-definition">
+                        Go's lightweight concurrency primitive. Like threads but much cheaper - you can run thousands simultaneously. No GIL equivalent means true parallelism.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Why Go is great for high-concurrency API servers. Each request can run in its own goroutine without the overhead of Python's GIL or process-based concurrency. Relevant when building ML serving infrastructure that needs to handle massive request volumes.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">GPU (Graphics Processing Unit)</div>
+                    <span class="term-category">Hardware</span>
+                    <div class="term-definition">
+                        Specialized processor originally designed for graphics but highly effective for neural network computations due to ability to perform massive parallel matrix operations. NVIDIA dominates the ML GPU market.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Foundation of modern ML. Can perform thousands of calculations simultaneously, making matrix operations (core of neural networks) much faster than CPUs. Has its own memory (VRAM). Most production ML models run on GPUs. Understanding GPU constraints (VRAM limits, batch sizing) is crucial for deployment.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">GPU Streams (CUDA Streams)</div>
+                    <span class="term-category">Hardware Concept</span>
+                    <div class="term-definition">
+                        Independent execution queues on a GPU that allow multiple operations to run concurrently. Like having multiple checkout lanes instead of one - different tasks (data transfer, inference, output copying) can overlap instead of waiting in sequence.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Dramatically improves GPU utilization and reduces latency. Without streams, operations are sequential (copy input → run model → copy output → repeat). With streams, multiple requests can overlap their stages, achieving 2-3x better throughput. Example: Request A runs inference while Request B copies data - both happen simultaneously. Triton and vLLM use streams automatically to maximize efficiency. Different from batching: batching combines requests in one operation, streams run multiple operations concurrently. Best practice: use both together.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- H -->
+            <div class="letter-section" id="H">
+                <div class="letter-header">H</div>
+                
+                <div class="term">
+                    <div class="term-name">HuggingFace</div>
+                    <span class="term-category">ML Platform</span>
+                    <div class="term-definition">
+                        The GitHub of machine learning - a platform for sharing, discovering, and using pre-trained models. Also provides the transformers library for easily loading and using models.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Where most teams get their models. Instead of training from scratch, you pull a model from HuggingFace, fine-tune if needed, then deploy. Your team likely uses HuggingFace as the source for base models before optimization and deployment.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- I -->
+            <div class="letter-section" id="I">
+                <div class="letter-header">I</div>
+                
+                <div class="term">
+                    <div class="term-name">Inference</div>
+                    <span class="term-category">Core Concept</span>
+                    <div class="term-definition">
+                        Using a trained model to make predictions on new data. The "running" phase of ML, as opposed to training. Your role focuses on inference - deploying and serving models efficiently to handle millions of predictions.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Two phases in ML: Training (teaching the model - expensive, weeks, millions of dollars, done once) and Inference (using the trained model - cheap, milliseconds, done millions of times). Users expect fast inference (<100ms for chatbots). Faster inference = serve more users on same hardware = lower costs. All optimization work (TensorRT, precision reduction, batching) targets inference speed.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- L -->
+            <div class="letter-section" id="L">
+                <div class="letter-header">L</div>
+                
+                <div class="term">
+                    <div class="term-name">LLM (Large Language Model)</div>
+                    <span class="term-category">Model Type</span>
+                    <div class="term-definition">
+                        Neural networks with billions of parameters trained on massive text datasets. Examples: GPT-4, Claude, Llama-70B. Powerful but expensive to run.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> These are the "expensive" models requiring significant GPU resources. Your job involves deploying these efficiently - choosing instance types, optimizing precision, managing VRAM constraints. Understanding their resource requirements is crucial for infrastructure planning.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- M -->
+            <div class="letter-section" id="M">
+                <div class="letter-header">M</div>
+                
+                <div class="term">
+                    <div class="term-name">Multiprocessing</div>
+                    <span class="term-category">Python Concurrency</span>
+                    <div class="term-definition">
+                        Running multiple separate Python processes, each with its own GIL. Allows true parallelism but with memory overhead (each process loads the model independently).
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> One solution to Python's GIL problem. Common pattern: run N Python processes, each loads the model, distribute requests across them. Trade-off: uses N times the RAM. Often combined with async/await within each process.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">MLOps (Machine Learning Operations)</div>
+                    <span class="term-category">Methodology</span>
+                    <div class="term-definition">
+                        The practice of deploying, monitoring, and maintaining machine learning models in production. ML's equivalent to DevOps, encompassing the full lifecycle from data preparation through deployment and continuous monitoring.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Your role is MLOps-focused. The lifecycle includes: Data Engineering → Model Development → Validation → Deployment (optimize, package) → Serving (infrastructure, scaling) → Monitoring (drift, performance) → Continuous Training. Unlike traditional software, models drift over time and need retraining. Key difference from CI/CD: data versioning is as critical as code versioning.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- O -->
+            <div class="letter-section" id="O">
+                <div class="letter-header">O</div>
+                
+                <div class="term">
+                    <div class="term-name">ONNX (Open Neural Network Exchange)</div>
+                    <span class="term-category">Model Format</span>
+                    <div class="term-definition">
+                        Vendor-neutral intermediate format for neural networks. Allows converting models from PyTorch/TensorFlow to a standard format that can run on different hardware and frameworks.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> The "assembly language" of ML models. Convert PyTorch → ONNX → TensorRT/OpenVINO. Decouples training frameworks from inference runtimes. Widely supported. Often the first step in production optimization pipeline.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">OpenVINO</div>
+                    <span class="term-category">Optimization Framework</span>
+                    <div class="term-definition">
+                        Intel's toolkit for optimizing neural networks to run efficiently on Intel hardware (CPUs, integrated GPUs). Intel's equivalent of NVIDIA's TensorRT.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> When deploying on Intel CPUs instead of NVIDIA GPUs (cost reasons, edge deployment). Automatically leverages AVX-512, AMX, and other Intel-specific acceleration. Takes ONNX models and optimizes for Intel hardware. Important for CPU-based inference scenarios.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- P -->
+            <div class="letter-section" id="P">
+                <div class="letter-header">P</div>
+                
+                <div class="term">
+                    <div class="term-name">Parameters (Model Parameters)</div>
+                    <span class="term-category">Core Concept</span>
+                    <div class="term-definition">
+                        The learned weights in a neural network - individual numbers that the model learned during training. A 7B model has 7 billion parameters. Each parameter is stored in memory as a floating-point number.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Parameter count determines: (1) Model size in memory - 7B params in FP16 = 14GB VRAM needed, (2) Inference speed - more params = more computation = slower, (3) Model capability - generally more params = smarter model. This is why you see models named by their size: Llama-3-8B, GPT-3.5-175B. Critical for estimating hardware requirements and costs.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">Process (vs Thread)</div>
+                    <span class="term-category">Concurrency Concept</span>
+                    <div class="term-definition">
+                        Independent program execution with its own memory space. Unlike threads (which share memory and are limited by GIL in Python), processes run completely separately.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Python processes avoid the GIL but use more memory. In ML serving: might run 4 processes, each with its own model copy, to handle requests in parallel. Trade memory for parallelism.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">PyTorch</div>
+                    <span class="term-category">ML Framework</span>
+                    <div class="term-definition">
+                        The most popular Python library for building and training neural networks. Facebook/Meta's framework that's become the de facto standard for research and development.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Where models are born. Data scientists train in PyTorch, hand you .pt/.pth files. Your job: convert these development-optimized models into production-ready formats (ONNX, TensorRT). Understanding PyTorch helps you communicate with data science teams about model requirements and constraints.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">Python</div>
+                    <span class="term-category">Programming Language</span>
+                    <div class="term-definition">
+                        High-level interpreted language. Standard for ML development and data science due to rich ecosystem (PyTorch, TensorFlow, NumPy). Has performance limitations (GIL) for production serving.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Your primary language for ML infrastructure. Great for development, orchestration, and wrapping optimized C++ inference engines. The GIL creates scaling challenges, so you'll use multiprocessing, async, or other languages (Go/Rust) for high-throughput serving layers.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- R -->
+            <div class="letter-section" id="R">
+                <div class="letter-header">R</div>
+                
+                <div class="term">
+                    <div class="term-name">RAM (Random Access Memory)</div>
+                    <span class="term-category">Hardware</span>
+                    <div class="term-definition">
+                        System memory accessible by the CPU. General-purpose storage for running programs and data.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Different from VRAM (GPU memory). When running models on CPU or loading models before transferring to GPU, you need sufficient RAM. Important for understanding instance sizing and multiprocessing constraints (each process needs RAM for model copy).
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">Rust</div>
+                    <span class="term-category">Programming Language</span>
+                    <div class="term-definition">
+                        Modern systems programming language focused on safety and performance. Memory-safe without garbage collection, as fast as C++, no GIL equivalent.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Increasingly used for performance-critical ML infrastructure. Parts of vLLM are written in Rust. Safer than C++, faster than Go. Harder to write than both. Used for components where safety and performance are both critical (serving layers, data pipelines).
+                    </div>
+                </div>
+            </div>
+            
+            <!-- S -->
+            <div class="letter-section" id="S">
+                <div class="letter-header">S</div>
+                
+                <div class="term">
+                    <div class="term-name">SIMD (Single Instruction, Multiple Data)</div>
+                    <span class="term-category">Hardware Concept</span>
+                    <div class="term-definition">
+                        CPU capability to perform the same operation on multiple data points simultaneously. General category that includes AVX-512, AMX, and other vectorized instruction sets.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Foundation of CPU-based ML acceleration. Instead of processing numbers one at a time, process many at once. Understanding this helps explain why CPU inference isn't always terrible - modern CPUs can be surprisingly effective for smaller models when using SIMD properly.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">SLM (Small Language Model)</div>
+                    <span class="term-category">Model Type</span>
+                    <div class="term-definition">
+                        Language models with fewer parameters (hundreds of millions to low billions). Examples: Llama-3B, Phi-3. Much faster and cheaper to run than LLMs.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Not everything needs GPT-4. For specific tasks (classification, simple generation), SLMs are good enough and much cheaper. Can run on CPUs or smaller GPUs. Part of your job is choosing the right model size for the task - don't overspend on capability you don't need.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">SOTA (State of the Art)</div>
+                    <span class="term-category">ML Concept</span>
+                    <div class="term-definition">
+                        The best-performing model currently available for a specific task. Changes frequently as new models are released.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Part of your role is tracking when better models become available. Benchmarks change constantly. You might need to re-deploy when SOTA shifts. Understanding evaluation metrics helps you decide when upgrading models is worth the migration effort.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- T -->
+            <div class="letter-section" id="T">
+                <div class="letter-header">T</div>
+                
+                <div class="term">
+                    <div class="term-name">TensorRT</div>
+                    <span class="term-category">Optimization Framework</span>
+                    <div class="term-definition">
+                        NVIDIA's optimization toolkit that takes trained models (PyTorch, ONNX) and optimizes them specifically for NVIDIA GPUs. Performs layer fusion, precision calibration, and kernel auto-tuning.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Makes models 2-10x faster on NVIDIA GPUs. Standard optimization step for production deployment on NVIDIA hardware. Works by analyzing your model and generating highly optimized GPU kernels. Often combined with precision reduction (FP32→FP16).
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">Threading</div>
+                    <span class="term-category">Python Concurrency</span>
+                    <div class="term-definition">
+                        Running multiple threads within a single Python process. Due to GIL, threads don't provide true parallelism for CPU-bound work in Python.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Often misunderstood - threading in Python is good for I/O-bound work (network, disk) but doesn't help with CPU-bound computation due to GIL. For ML serving, the inference itself (C++ code) releases the GIL, so threading can work, but multiprocessing or async/await are more common patterns.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">TPU (Tensor Processing Unit)</div>
+                    <span class="term-category">Hardware</span>
+                    <div class="term-definition">
+                        Google's custom-designed chips specifically optimized for tensor operations (neural network computations). Only available on Google Cloud Platform.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Alternative to NVIDIA GPUs. Sometimes faster, sometimes cheaper, but locked to Google Cloud. If your company uses GCP, TPUs might be an option. Understanding TPU vs GPU tradeoffs helps with cloud strategy decisions.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">Training (Model Training)</div>
+                    <span class="term-category">Core Concept</span>
+                    <div class="term-definition">
+                        The process of teaching a neural network by showing it millions/billions of examples and adjusting parameters to minimize errors. Extremely expensive and time-consuming compared to inference.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Training a 7B model from scratch takes ~2 weeks on 2,048 GPUs and costs $1-3 million. Larger models (GPT-4 scale) cost $10-100+ million. This is why: (1) Companies use pre-trained models from HuggingFace instead of training from scratch, (2) Fine-tuning (cheaper, hours, thousands) is preferred over full training, (3) Your role focuses on inference/deployment, not training. Understanding training costs helps justify infrastructure decisions.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">Triton Inference Server</div>
+                    <span class="term-category">Serving Platform</span>
+                    <div class="term-definition">
+                        NVIDIA's production-grade inference server. Supports multiple model formats (PyTorch, ONNX, TensorRT), handles request batching, provides HTTP/gRPC APIs, and includes monitoring/metrics.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> Industry-standard serving solution for NVIDIA deployments. Like nginx but for ML models. Handles the hard parts: request batching (crucial for GPU efficiency), concurrent requests, model versioning, health checks. You configure and deploy Triton rather than building your own serving layer.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- V -->
+            <div class="letter-section" id="V">
+                <div class="letter-header">V</div>
+                
+                <div class="term">
+                    <div class="term-name">vLLM</div>
+                    <span class="term-category">Serving Platform</span>
+                    <div class="term-definition">
+                        Specialized high-performance serving system specifically for Large Language Models. Uses PagedAttention and other LLM-specific optimizations to maximize throughput.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> When serving LLMs specifically, vLLM is often faster than general-purpose Triton. Optimized for text generation workloads. Handles the unique challenges of LLM serving (KV cache management, long sequences, batching strategies). Choose vLLM for LLMs, Triton for other model types.
+                    </div>
+                </div>
+                
+                <div class="term">
+                    <div class="term-name">VRAM (Video RAM)</div>
+                    <span class="term-category">Hardware</span>
+                    <div class="term-definition">
+                        GPU memory. Much faster than system RAM for GPU operations but limited in size and expensive. Models must fit in VRAM to run on GPU.
+                    </div>
+                    <div class="term-context">
+                        <strong>Why it matters:</strong> The primary constraint in GPU deployments. A 70B parameter model in FP16 needs ~140GB VRAM. This drives instance selection (g5 has 24GB, might need multiple GPUs or model quantization). Understanding VRAM requirements is crucial for infrastructure planning and cost optimization.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function filterTerms() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const terms = document.getElementsByClassName('term');
+            
+            for (let i = 0; i < terms.length; i++) {
+                const termName = terms[i].getElementsByClassName('term-name')[0];
+                const termDefinition = terms[i].getElementsByClassName('term-definition')[0];
+                const txtValue = termName.textContent + ' ' + termDefinition.textContent;
+                
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    terms[i].style.display = '';
+                } else {
+                    terms[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

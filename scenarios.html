@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Deployment Scenarios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        nav {
+            background: rgba(0,0,0,0.2);
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 1.5em;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .nav-links a.active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px 40px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .assumptions {
+            background: white;
+            border-radius: 12px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 5px solid #667eea;
+        }
+        
+        .assumptions h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .assumptions ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .assumptions li {
+            color: #4a5568;
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            line-height: 1.5;
+        }
+        
+        .assumptions li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .scenarios-grid {
+            display: grid;
+            gap: 25px;
+        }
+        
+        .scenario-card {
+            background: white;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .scenario-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+        
+        .scenario-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .scenario-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        
+        .scenario-title {
+            color: #2d3748;
+            font-size: 1.6em;
+            font-weight: 600;
+        }
+        
+        .scenario-difficulty {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        .difficulty-beginner {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .difficulty-intermediate {
+            background: #fef3c7;
+            color: #78350f;
+        }
+        
+        .difficulty-advanced {
+            background: #fecaca;
+            color: #7f1d1d;
+        }
+        
+        .scenario-description {
+            color: #4a5568;
+            line-height: 1.7;
+            font-size: 1.05em;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-challenges {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .scenario-challenges h4 {
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        
+        .scenario-challenges ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .scenario-challenges li {
+            color: #4a5568;
+            padding: 6px 0;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.5;
+        }
+        
+        .scenario-challenges li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .section-divider {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 40px 0 30px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .section-divider h2 {
+            color: #2d3748;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+        
+        .section-divider p {
+            color: #718096;
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">🚀 ML Deployment Hub</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="stack.html">Deployment Stack</a>
+                <a href="glossary.html">Glossary</a>
+                <a href="scenarios.html" class="active">Scenarios</a>
+                <a href="qa.html">Q&A</a>
+                <a href="visuals.html">Visuals</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎯 ML Deployment Scenarios</h1>
+            <p>Practice real-world deployment challenges. Work through these scenarios to build practical understanding of ML infrastructure decisions, tradeoffs, and problem-solving approaches.</p>
+        </div>
+        
+        <div class="assumptions">
+            <h3>Global Assumptions</h3>
+            <ul>
+                <li><strong>Cloud Platform:</strong> AWS only (focusing on AWS-specific instance types and services)</li>
+                <li><strong>Model Type:</strong> Large Language Models (LLMs) only - no computer vision or other model types</li>
+                <li><strong>Production Context:</strong> All scenarios assume production deployments with real users and business constraints</li>
+            </ul>
+        </div>
+        
+        <div class="section-divider">
+            <h2>Core Deployment Scenarios</h2>
+            <p>Essential scenarios covering the fundamentals of ML deployment</p>
+        </div>
+        
+        <div class="scenarios-grid">
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-number">1</div>
+                    <div class="scenario-title">Greenfield Deployment</div>
+                    <span class="scenario-difficulty difficulty-beginner">Beginner</span>
+                </div>
+                <div class="scenario-description">
+                    Your company is launching a new chatbot feature and needs to deploy a 7B parameter LLM from HuggingFace. There's no existing ML infrastructure - you're starting from scratch. The product team expects to handle around 100 concurrent users initially, with typical chatbot usage patterns (bursts of activity, then quiet periods).
+                </div>
+                <div class="scenario-challenges">
+                    <h4>Key Questions to Consider:</h4>
+                    <ul>
+                        <li>Which AWS instance type should you choose and why?</li>
+                        <li>What precision format makes sense to start with?</li>
+                        <li>Should you optimize the model immediately or deploy the base version first?</li>
+                        <li>How do you validate the deployment is working correctly?</li>
+                        <li>What monitoring do you need from day one?</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-number">2</div>
+                    <div class="scenario-title">Model Upgrade (Same Infrastructure)</div>
+                    <span class="scenario-difficulty difficulty-beginner">Beginner</span>
+                </div>
+                <div class="scenario-description">
+                    Your chatbot has been running for 2 months with a 7B parameter model on g5 instances. User feedback shows the quality isn't great - responses are sometimes irrelevant or incomplete. You've found a newer, better-performing 7B model on HuggingFace with significantly improved benchmarks. It should fit on your existing hardware.
+                </div>
+                <div class="scenario-challenges">
+                    <h4>Key Questions to Consider:</h4>
+                    <ul>
+                        <li>How do you safely deploy the new model without disrupting users?</li>
+                        <li>What's your A/B testing strategy?</li>
+                        <li>How do you measure if the new model is actually better in production?</li>
+                        <li>What could go wrong during the swap?</li>
+                        <li>How do you rollback if users prefer the old model?</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-number">3</div>
+                    <div class="scenario-title">Model Upgrade (Needs Better Hardware)</div>
+                    <span class="scenario-difficulty difficulty-intermediate">Intermediate</span>
+                </div>
+                <div class="scenario-description">
+                    After A/B testing, users clearly prefer higher-quality responses. You want to upgrade from your current 7B model to a 13B model for better accuracy. The problem: your 13B model won't fit in the 24GB VRAM on your current g5 instances. The larger model also has higher latency requirements.
+                </div>
+                <div class="scenario-challenges">
+                    <h4>Key Questions to Consider:</h4>
+                    <ul>
+                        <li>What are your hardware upgrade options (instance types, multi-GPU, etc.)?</li>
+                        <li>How do you estimate the cost increase?</li>
+                        <li>How do you justify the additional cost to stakeholders?</li>
+                        <li>What's your migration path from g5 to the new instances?</li>
+                        <li>Could optimization techniques (quantization, etc.) let you stay on existing hardware?</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-divider">
+            <h2>Performance & Optimization Scenarios</h2>
+            <p>Scenarios focused on improving performance, reducing latency, and managing costs</p>
+        </div>
+        
+        <div class="scenarios-grid">
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-number">4</div>
+                    <div class="scenario-title">Multi-Language Performance Optimization</div>
+                    <span class="scenario-difficulty difficulty-intermediate">Intermediate</span>
+                </div>
+                <div class="scenario-description">
+                    Your Python-based serving layer (FastAPI) is handling requests, but you're stuck at around 100 requests per second. Product needs you to scale to 1,000 req/s to support a major marketing campaign. The bottleneck isn't the model inference itself (which runs in C++ via ONNX Runtime) - it's the Python request handling, preprocessing, and postprocessing logic.
+                </div>
+                <div class="scenario-challenges">
+                    <h4>Key Questions to Consider:</h4>
+                    <ul>
+                        <li>When would you use Go vs Rust vs C++ for the serving layer?</li>
+                        <li>What parts should stay in Python and what should be rewritten?</li>
+                        <li>How does Python's GIL factor into this decision?</li>
+                        <li>Could async/await or multiprocessing solve this without changing languages?</li>
+                        <li>What are the tradeoffs in development time vs performance gains?</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-number">5</div>
+                    <div class="scenario-title">Budget Constraints / Cost Optimization</div>
+                    <span class="scenario-difficulty difficulty-advanced">Advanced</span>
+                </div>
+                <div class="scenario-description">
+                    Finance has mandated a 50% infrastructure cost reduction within 2 months. Your current setup: a 70B parameter model running on expensive g5.48xlarge instances serving 5,000 req/s. Meanwhile, users are already complaining about 300ms average latency. You need to cut costs dramatically while maintaining or improving user experience.
+                </div>
+                <div class="scenario-challenges">
+                    <h4>Key Questions to Consider:</h4>
+                    <ul>
+                        <li>Should you use quantization (FP16→INT8/INT4)? What are the accuracy tradeoffs?</li>
+                        <li>Should you use model distillation to move from 70B to a 13B or 7B model?</li>
+                        <li>Could switching to cheaper instance types work? Which ones?</li>
+                        <li>What about a hybrid approach - small model for simple queries, large model for complex ones?</li>
+                        <li>How do you measure and communicate the tradeoffs to stakeholders?</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-number">6</div>
+                    <div class="scenario-title">Latency Crisis</div>
+                    <span class="scenario-difficulty difficulty-intermediate">Intermediate</span>
+                </div>
+                <div class="scenario-description">
+                    Your LLM deployment currently averages 200ms response time. Product just informed you that they need to get this down to under 50ms for a new real-time feature launching in 3 weeks. You cannot change the model itself (business requirement - it's fine-tuned and performs well). You need to make the infrastructure faster.
+                </div>
+                <div class="scenario-challenges">
+                    <h4>Key Questions to Consider:</h4>
+                    <ul>
+                        <li>What optimization levers can you pull without changing the model?</li>
+                        <li>Would request batching help or hurt latency?</li>
+                        <li>Should you use TensorRT optimization? What precision changes make sense?</li>
+                        <li>Could better instance types with faster GPUs solve this?</li>
+                        <li>What about model warm-up and caching strategies?</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-divider">
+            <h2>Scale & Reliability Scenarios</h2>
+            <p>Scenarios dealing with traffic spikes, multi-region deployments, and production issues</p>
+        </div>
+        
+        <div class="scenarios-grid">
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-number">7</div>
+                    <div class="scenario-title">Scaling for Viral Traffic</div>
+                    <span class="scenario-difficulty difficulty-intermediate">Intermediate</span>
+                </div>
+                <div class="scenario-description">
+                    Your chatbot feature is handling 1,000 req/s comfortably. Tonight at 5 PM, a celebrity will tweet about your product and you expect traffic to spike to 10,000-15,000 req/s within hours. Your infrastructure team needs a plan by end of day. Budget is flexible for this emergency, but you need to scale quickly and reliably.
+                </div>
+                <div class="scenario-challenges">
+                    <h4>Key Questions to Consider:</h4>
+                    <ul>
+                        <li>How do you scale quickly (within hours)?</li>
+                        <li>What's your auto-scaling strategy?</li>
+                        <li>How do you handle load balancing across multiple instances?</li>
+                        <li>What batching strategies would help maximize throughput?</li>
+                        <li>What could go wrong and how do you prepare for failures?</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-number">8</div>
+                    <div class="scenario-title">Multi-Region Deployment</div>
+                    <span class="scenario-difficulty difficulty-advanced">Advanced</span>
+                </div>
+                <div class="scenario-description">
+                    Your product serves customers globally. Currently everything runs in us-east-1. US users get 50ms response times, but European users are seeing 300ms+ latency and complaining. You need to deploy in EU regions while managing costs, model versioning, and maintaining consistency across regions.
+                </div>
+                <div class="scenario-challenges">
+                    <h4>Key Questions to Consider:</h4>
+                    <ul>
+                        <li>Which AWS regions should you deploy to and why?</li>
+                        <li>How do you handle model updates across multiple regions?</li>
+                        <li>What's your strategy for routing users to the nearest region?</li>
+                        <li>How do you keep costs reasonable with multi-region deployment?</li>
+                        <li>What happens if one region fails?</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-number">9</div>
+                    <div class="scenario-title">Model Drift / Quality Issues</div>
+                    <span class="scenario-difficulty difficulty-intermediate">Intermediate</span>
+                </div>
+                <div class="scenario-description">
+                    Your model has been running smoothly for two weeks. Suddenly, users start reporting that responses are getting worse - more irrelevant answers, occasional gibberish, and lower satisfaction scores. Your monitoring shows accuracy metrics dropping from 85% to 72% over the past 3 days. Nothing has changed in your deployment configuration.
+                </div>
+                <div class="scenario-challenges">
+                    <h4>Key Questions to Consider:</h4>
+                    <ul>
+                        <li>What's your systematic debugging process?</li>
+                        <li>Could this be a data distribution shift in user queries?</li>
+                        <li>How do you check if the model itself has changed (model versioning)?</li>
+                        <li>What monitoring and logging should you have in place to catch this earlier?</li>
+                        <li>How do you communicate this issue to stakeholders while investigating?</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <div class="scenario-number">10</div>
+                    <div class="scenario-title">Security & Compliance Constraints</div>
+                    <span class="scenario-difficulty difficulty-advanced">Advanced</span>
+                </div>
+                <div class="scenario-description">
+                    Your legal team has just informed you that due to new regulations, your LLM must run in a private VPC with no internet access - all data must stay within the VPC for compliance. However, your current architecture relies on the model calling an external knowledge base API for retrieval-augmented generation (RAG). Users need this RAG functionality to continue working.
+                </div>
+                <div class="scenario-challenges">
+                    <h4>Key Questions to Consider:</h4>
+                    <ul>
+                        <li>How do you architect this within the private VPC constraint?</li>
+                        <li>Do you need to bring the knowledge base into the VPC?</li>
+                        <li>What about VPC endpoints or private links?</li>
+                        <li>How do you handle model updates and monitoring without internet access?</li>
+                        <li>What are the performance and cost implications?</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

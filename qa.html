@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Deployment Q&A</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        nav {
+            background: rgba(0,0,0,0.2);
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 1.5em;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .nav-links a.active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px 40px;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .header p {
+            color: #718096;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .qa-section {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .question {
+            color: #2d3748;
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-left: 40px;
+            position: relative;
+        }
+        
+        .question:before {
+            content: "Q:";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: 700;
+        }
+        
+        .answer {
+            color: #4a5568;
+            line-height: 1.8;
+            font-size: 1.05em;
+        }
+        
+        .answer h3 {
+            color: #2d3748;
+            font-size: 1.2em;
+            margin: 25px 0 15px 0;
+        }
+        
+        .answer p {
+            margin-bottom: 15px;
+        }
+        
+        .answer strong {
+            color: #667eea;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+        
+        .example-box {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .example-box h4 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f7fafc;
+        }
+        
+        .analogy-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 2px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .analogy-box h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">🚀 ML Deployment Hub</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="stack.html">Deployment Stack</a>
+                <a href="glossary.html">Glossary</a>
+                <a href="scenarios.html">Scenarios</a>
+                <a href="qa.html" class="active">Q&A</a>
+                <a href="visuals.html">Visuals</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="header">
+            <h1>💡 Common Questions & Deep Dives</h1>
+            <p>Detailed explanations answering the "why" behind ML deployment concepts. Goes beyond definitions to build real understanding.</p>
+        </div>
+        
+        <div class="qa-section">
+            <div class="question">Why does floating point (FP) only handle numbers? What if the value was a string?</div>
+            <div class="answer">
+                <p><strong>Neural networks can ONLY work with numbers.</strong> Everything must be converted to numbers before the model can process it.</p>
+                
+                <p><strong>Why?</strong> Because neural networks are fundamentally just mathematical operations:</p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>Matrix multiplication (numbers × numbers)</li>
+                    <li>Addition (numbers + numbers)</li>
+                    <li>Activation functions (mathematical operations on numbers)</li>
+                </ul>
+                
+                <h3>What About Text (Strings)?</h3>
+                <p>Text gets converted to numbers first through a process called tokenization and embedding:</p>
+                
+                <div class="code-block">
+"Hello world"
+    ↓ (tokenization)
+[15496, 995]  ← Token IDs (numbers representing words)
+    ↓ (embedding)
+[0.234, -0.891, 0.456, ...]  ← 768-dimensional vector of floats
+    ↓
+Model processes these floating-point numbers
+                </div>
+                
+                <div class="example-box">
+                    <h4>Examples of Data Conversion:</h4>
+                    <p><strong>Images:</strong> Converted to pixel values (0-255), normalized to floats (0.0-1.0)</p>
+                    <p><strong>Audio:</strong> Converted to waveform amplitudes (floats)</p>
+                    <p><strong>Categories:</strong> "Cat", "Dog", "Bird" → [0, 1, 2] or one-hot vectors</p>
+                </div>
+                
+                <p><strong>Bottom line:</strong> Everything becomes floating-point numbers before the model sees it. This is why FP precision (FP32, FP16, FP8) matters - it's the fundamental data type neural networks operate on.</p>
+            </div>
+        </div>
+        
+        <div class="qa-section">
+            <div class="question">Why does training take weeks and cost millions of dollars?</div>
+            <div class="answer">
+                <h3>Time: Why Weeks?</h3>
+                <p>Training a 7B parameter model from scratch requires processing trillions of data points:</p>
+                
+                <div class="example-box">
+                    <h4>Actual Timeline Example (Llama-2-7B):</h4>
+                    <p>• Trained on 2 trillion tokens (words/pieces of words)</p>
+                    <p>• Used ~180,000 GPU hours total</p>
+                    <p>• On 2,048 GPUs running simultaneously = ~88 hours per GPU</p>
+                    <p>• That's 3.7 days of perfect utilization</p>
+                    <p>• In reality: ~2 weeks accounting for checkpointing, debugging, restarts</p>
+                </div>
+                
+                <p>Each token requires:</p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>A forward pass (compute prediction) - touching all 7 billion parameters</li>
+                    <li>A backward pass (calculate gradients, update weights)</li>
+                    <li>This happens billions of times</li>
+                </ul>
+                
+                <h3>Cost: Why Millions?</h3>
+                
+                <div class="code-block">
+Hardware Cost Breakdown for Training a 7B Model:
+
+Hardware: NVIDIA A100 GPUs (80GB)
+Cloud cost: ~$2.50/hour per GPU
+GPUs needed: ~2,048 GPUs (for reasonable training time)
+
+Math:
+2,048 GPUs × $2.50/hour × 88 hours = $450,560
+
+Additional costs:
+• Data storage and processing: ~$50,000
+• Engineer time (months of work): ~$200,000
+• Failed experiments/iterations: 2-3x the above
+• Infrastructure and overhead: ~$100,000
+
+Total: $1-3 million for a 7B model from scratch
+                </div>
+                
+                <div class="example-box">
+                    <h4>For Larger Models (70B, GPT-4 scale):</h4>
+                    <p>• 10-100x more compute required</p>
+                    <p>• Total costs: $10-100+ million</p>
+                    <p>• GPT-4 training estimated at $100+ million</p>
+                </div>
+                
+                <p><strong>This is why:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>Companies use pre-trained models from HuggingFace (cost already paid)</li>
+                    <li>Fine-tuning is preferred (hours, thousands of dollars vs millions)</li>
+                    <li>Your job focuses on deploying trained models, not training them</li>
+                    <li>Understanding these costs helps justify infrastructure optimization decisions</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="qa-section">
+            <div class="question">TensorRT makes things 2-10x faster - but faster at what? Training or serving?</div>
+            <div class="answer">
+                <p><strong>Serving (inference) ONLY.</strong> TensorRT doesn't help with training at all.</p>
+                
+                <h3>Why the Speedup for Inference</h3>
+                
+                <div class="comparison-table">
+                    <table style="width: 100%;">
+                        <tr>
+                            <th>Before TensorRT (Base PyTorch)</th>
+                            <th>After TensorRT Optimization</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                • Many small GPU operations<br>
+                                • Each operation has overhead<br>
+                                • Running in FP32 (slow)<br>
+                                • Generic kernels<br>
+                                • <strong>Result: 100ms per request</strong>
+                            </td>
+                            <td>
+                                • Operations fused together<br>
+                                • Running in FP16 (2x faster)<br>
+                                • Custom GPU kernels<br>
+                                • Memory optimized<br>
+                                • <strong>Result: 10-20ms per request</strong>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h3>Where the Speedup Comes From:</h3>
+                
+                <div class="example-box">
+                    <h4>Three Main Optimizations:</h4>
+                    <p><strong>1. Precision Reduction (2x speedup):</strong> FP32 → FP16 means GPUs can do twice as many operations per second</p>
+                    <p><strong>2. Layer Fusion (2-3x speedup):</strong> Combining multiple operations reduces GPU kernel launches (which have overhead)</p>
+                    <p><strong>3. Kernel Optimization (1.5-2x speedup):</strong> Generate GPU code specifically optimized for your model and GPU architecture</p>
+                    <p><strong>Combined:</strong> 2x × 2.5x × 1.5x ≈ 7.5x total speedup</p>
+                </div>
+                
+                <h3>Why Training Doesn't Benefit:</h3>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Needs high precision:</strong> Training requires FP32 for numerical stability during gradient updates</li>
+                    <li><strong>Already optimized:</strong> Training frameworks already batch and optimize efficiently</li>
+                    <li><strong>Different workload:</strong> TensorRT's optimizations are inference-specific (frozen weights, no gradients)</li>
+                </ul>
+                
+                <p><strong>Key takeaway:</strong> TensorRT is your go-to optimization for production inference on NVIDIA GPUs. It's a deployment tool, not a training tool.</p>
+            </div>
+        </div>
+        
+        <div class="qa-section">
+            <div class="question">Why is request batching optimal for GPU efficiency?</div>
+            <div class="answer">
+                <p>This is one of the most important concepts for understanding ML infrastructure costs and performance!</p>
+                
+                <div class="analogy-box">
+                    <h4>🚌 The Bus Analogy</h4>
+                    <p><strong>Without batching (1 request at a time):</strong></p>
+                    <p>Bus arrives → picks up 1 passenger → drives route → returns<br>
+                    Bus arrives → picks up 1 passenger → drives route → returns<br>
+                    Result: Bus is mostly empty. Lots of trips. Inefficient.</p>
+                    
+                    <p style="margin-top: 15px;"><strong>With batching (many requests together):</strong></p>
+                    <p>Bus waits → picks up 50 passengers → drives route → returns<br>
+                    Result: Bus is full. Fewer trips. Much more efficient.</p>
+                </div>
+                
+                <h3>The Technical Reality</h3>
+                <p><strong>GPUs are massively parallel processors</strong> with thousands of cores that can work simultaneously.</p>
+                
+                <div class="example-box">
+                    <h4>NVIDIA A10G GPU (in g5 instances):</h4>
+                    <p>• 9,216 CUDA cores available</p>
+                    <p>• Can perform 9,216 operations at the same time</p>
+                    <p>• Processing 1 request uses only 100-500 cores</p>
+                    <p>• Other 8,700+ cores sit IDLE (wasted money!)</p>
+                </div>
+                
+                <h3>The Dramatic Impact</h3>
+                
+                <div class="comparison-table">
+                    <table style="width: 100%;">
+                        <tr>
+                            <th>Metric</th>
+                            <th>Without Batching (1 req)</th>
+                            <th>With Batching (32 reqs)</th>
+                        </tr>
+                        <tr>
+                            <td>GPU Utilization</td>
+                            <td>5-10%</td>
+                            <td>80-90%</td>
+                        </tr>
+                        <tr>
+                            <td>Throughput</td>
+                            <td>10 req/s</td>
+                            <td>300+ req/s</td>
+                        </tr>
+                        <tr>
+                            <td>Latency per request</td>
+                            <td>~50ms</td>
+                            <td>~60ms (minimal increase)</td>
+                        </tr>
+                        <tr>
+                            <td>Cost efficiency</td>
+                            <td>Baseline</td>
+                            <td>30x better</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="example-box">
+                    <h4>Real Cost Impact:</h4>
+                    <p><strong>Scenario:</strong> Need to serve 300 requests per second</p>
+                    <p><strong>Without batching:</strong> Need 30 GPUs @ $1/hour = $30/hour = $21,600/month</p>
+                    <p><strong>With batching:</strong> Need 1 GPU @ $1/hour = $1/hour = $720/month</p>
+                    <p><strong>Savings:</strong> $20,880/month (96% cost reduction!)</p>
+                </div>
+                
+                <h3>The Magic Explained</h3>
+                <p>GPUs can process a batch of 32 inputs <strong>almost as fast as 1 input</strong> because they execute all 32 in parallel using different cores.</p>
+                
+                <div class="code-block">
+Single request:
+[0.1, 0.2, 0.3, ...] → Model → [0.8, 0.1, 0.1]
+Uses 500 cores, takes 50ms
+
+Batch of 32 requests:
+[Request 1: [0.1, 0.2, ...]]  ┐
+[Request 2: [0.5, 0.3, ...]]  │
+[Request 3: [0.2, 0.8, ...]]  ├→ All processed in parallel
+...                            │
+[Request 32: [0.9, 0.1, ...]] ┘
+Uses 9,000 cores, takes 60ms (only 20% slower for 32x throughput!)
+                </div>
+                
+                <h3>The Trade-off</h3>
+                <p><strong>Cost:</strong> Need to wait a bit to collect a batch (adds ~10-50ms latency)</p>
+                <p><strong>Benefit:</strong> 10-30x better throughput and cost efficiency</p>
+                <p><strong>Verdict:</strong> Almost always worth it for production systems</p>
+                
+                <p style="margin-top: 20px;"><strong>Tools like Triton and vLLM handle batching automatically</strong> - they collect incoming requests, batch them intelligently, and maximize GPU utilization without you having to code it yourself.</p>
+            </div>
+        </div>
+        
+        <div class="qa-section">
+            <div class="question">Is there a standard ML deployment lifecycle like CI/CD? What's the proper terminology?</div>
+            <div class="answer">
+                <p><strong>Yes! The term is MLOps (Machine Learning Operations)</strong> - ML's equivalent to DevOps.</p>
+                
+                <p>MLOps is relatively new (coined around 2015-2017) but rapidly standardizing across the industry.</p>
+                
+                <h3>The MLOps Lifecycle</h3>
+                
+                <div class="code-block">
+1. Data Engineering
+   ↓ Collect, clean, version data
+   ↓ Tools: DVC, feature stores
+   
+2. Model Development  
+   ↓ Experiment, train, evaluate
+   ↓ Tools: MLflow, Weights & Biases
+   
+3. Model Validation
+   ↓ Test accuracy, bias, performance
+   ↓ A/B testing framework
+   
+4. Model Deployment ← YOUR FOCUS AREA
+   ↓ Optimize (ONNX, TensorRT)
+   ↓ Package and deploy
+   ↓ Tools: Docker, Kubernetes, Triton
+   
+5. Model Serving ← YOUR FOCUS AREA
+   ↓ API endpoints, load balancing
+   ↓ Tools: Triton, vLLM, FastAPI
+   
+6. Monitoring ← YOUR FOCUS AREA
+   ↓ Track performance, drift, errors
+   ↓ Tools: Prometheus, Grafana
+   
+7. Model Governance
+   ↓ Versioning, rollback, compliance
+   ↓ Tools: MLflow Model Registry
+   
+8. Continuous Training (CT)
+   ↓ Retrain on new data
+   ↓ Like CI/CD but for models
+                </div>
+                
+                <h3>MLOps vs Traditional CI/CD</h3>
+                
+                <div class="comparison-table">
+                    <table style="width: 100%;">
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Software CI/CD</th>
+                            <th>ML MLOps</th>
+                        </tr>
+                        <tr>
+                            <td>Primary artifact</td>
+                            <td>Code</td>
+                            <td>Code + Data + Model</td>
+                        </tr>
+                        <tr>
+                            <td>Testing</td>
+                            <td>Unit tests, integration tests</td>
+                            <td>All that + accuracy tests, bias tests, A/B tests</td>
+                        </tr>
+                        <tr>
+                            <td>Deployment</td>
+                            <td>Deploy once, runs indefinitely</td>
+                            <td>Model degrades over time (drift)</td>
+                        </tr>
+                        <tr>
+                            <td>Versioning</td>
+                            <td>Git for code</td>
+                            <td>Git + data versioning + model registry</td>
+                        </tr>
+                        <tr>
+                            <td>Continuous process</td>
+                            <td>CI/CD</td>
+                            <td>CI/CD/CT (Continuous Training)</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h3>Key Differences from Traditional Software</h3>
+                
+                <div class="example-box">
+                    <h4>1. Models Drift Over Time</h4>
+                    <p>Software doesn't suddenly break just because time passed. Models degrade as the world changes and data distributions shift. You need continuous monitoring and periodic retraining.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>2. Experiments Are First-Class Citizens</h4>
+                    <p>In ML, you might train 100 different models before finding the right one. You need to track: which model version, which data, which hyperparameters, which performance. Way more complex than git commits.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>3. Data Versioning Is As Critical As Code Versioning</h4>
+                    <p>You can't reproduce a model without the exact training data. "The model worked yesterday" isn't enough - you need to know which data version was used.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h4>4. A/B Testing Is Standard</h4>
+                    <p>You can't just "release" a new model like you release code. You need to compare it against the old model with real traffic to see if it's actually better in production.</p>
+                </div>
+                
+                <h3>Your Role in MLOps</h3>
+                <p>When working through the scenarios, you're focusing on:</p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><strong>Model Deployment:</strong> Optimize, package, deploy (ONNX, TensorRT, Docker)</li>
+                    <li><strong>Model Serving:</strong> Infrastructure, scaling, instance selection</li>
+                    <li><strong>Monitoring:</strong> Latency, errors, drift detection</li>
+                </ul>
+                
+                <p>This is <strong>one critical piece</strong> of the larger MLOps lifecycle, and it's a full-time specialized role: <strong>ML Engineer / MLOps Engineer / ML Infrastructure Engineer</strong>.</p>
+                
+                <p style="margin-top: 20px;"><strong>In interviews:</strong> Understanding where your work fits in the bigger MLOps picture shows maturity and helps you ask good questions about the team's workflow.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
