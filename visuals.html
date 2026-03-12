@@ -1174,6 +1174,129 @@
                 <p style="margin-top: 15px; color: #667eea; font-weight: 600;">Interview tip: When discussing optimizations (batching, precision, TensorRT), always clarify you're talking about inference, not training!</p>
             </div>
         </div>
+        
+        <!-- Deployment Validation -->
+        <div class="visual-section">
+            <div class="visual-title">8. Deployment Validation: Healthy vs Unhealthy Metrics</div>
+            <div class="visual-subtitle">
+                Deploying a model is only half the job - you need to validate it's working correctly. Here's what good and bad deployments look like side-by-side.
+            </div>
+            
+            <div class="diagram-container">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    
+                    <!-- Healthy Deployment -->
+                    <div style="background: white; border: 3px solid #48bb78; border-radius: 12px; padding: 30px;">
+                        <div style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 15px; border-radius: 8px; font-weight: 700; text-align: center; margin-bottom: 20px; font-size: 1.3em;">
+                            ✅ Healthy Deployment
+                        </div>
+                        
+                        <div style="background: #f0fff4; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #48bb78;">
+                            <div style="font-weight: 700; color: #22543d; margin-bottom: 10px; font-size: 1.1em;">GPU Metrics</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Memory:</strong> 17.2 GB / 24 GB (72%)</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Utilization:</strong> 78%</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Temperature:</strong> 72°C</div>
+                            <div style="color: #2d3748;"><strong>Power:</strong> 220W / 300W</div>
+                            <div style="color: #38a169; font-weight: 600; margin-top: 10px; font-size: 0.9em;">✓ Efficient resource usage</div>
+                        </div>
+                        
+                        <div style="background: #f0fff4; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #48bb78;">
+                            <div style="font-weight: 700; color: #22543d; margin-bottom: 10px; font-size: 1.1em;">Performance</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Latency (p50):</strong> 15ms</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Latency (p95):</strong> 32ms</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Latency (p99):</strong> 58ms</div>
+                            <div style="color: #2d3748;"><strong>Throughput:</strong> 145 req/s</div>
+                            <div style="color: #38a169; font-weight: 600; margin-top: 10px; font-size: 0.9em;">✓ Fast and consistent</div>
+                        </div>
+                        
+                        <div style="background: #f0fff4; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #48bb78;">
+                            <div style="font-weight: 700; color: #22543d; margin-bottom: 10px; font-size: 1.1em;">Batching</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Avg Batch Size:</strong> 24</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>KV Cache:</strong> 2.8 GB</div>
+                            <div style="color: #2d3748;"><strong>Queue Length:</strong> 3</div>
+                            <div style="color: #38a169; font-weight: 600; margin-top: 10px; font-size: 0.9em;">✓ Good batching efficiency</div>
+                        </div>
+                        
+                        <div style="background: #f0fff4; padding: 20px; border-radius: 8px; border: 2px solid #48bb78;">
+                            <div style="font-weight: 700; color: #22543d; margin-bottom: 10px; font-size: 1.1em;">Reliability</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Success Rate:</strong> 99.8%</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>5xx Errors:</strong> 0.1%</div>
+                            <div style="color: #2d3748;"><strong>Timeouts:</strong> 0.1%</div>
+                            <div style="color: #38a169; font-weight: 600; margin-top: 10px; font-size: 0.9em;">✓ Production ready!</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Unhealthy Deployment -->
+                    <div style="background: white; border: 3px solid #ef4444; border-radius: 12px; padding: 30px;">
+                        <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 15px; border-radius: 8px; font-weight: 700; text-align: center; margin-bottom: 20px; font-size: 1.3em;">
+                            ❌ Unhealthy Deployment
+                        </div>
+                        
+                        <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #ef4444;">
+                            <div style="font-weight: 700; color: #7f1d1d; margin-bottom: 10px; font-size: 1.1em;">GPU Metrics</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Memory:</strong> 23.8 GB / 24 GB (99%)</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Utilization:</strong> 23%</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Temperature:</strong> 88°C</div>
+                            <div style="color: #2d3748;"><strong>Power:</strong> 95W / 300W</div>
+                            <div style="color: #c53030; font-weight: 600; margin-top: 10px; font-size: 0.9em;">✗ Risk of OOM + not batching!</div>
+                        </div>
+                        
+                        <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #ef4444;">
+                            <div style="font-weight: 700; color: #7f1d1d; margin-bottom: 10px; font-size: 1.1em;">Performance</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Latency (p50):</strong> 340ms</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Latency (p95):</strong> 890ms</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Latency (p99):</strong> 1450ms</div>
+                            <div style="color: #2d3748;"><strong>Throughput:</strong> 8 req/s</div>
+                            <div style="color: #c53030; font-weight: 600; margin-top: 10px; font-size: 0.9em;">✗ Way too slow!</div>
+                        </div>
+                        
+                        <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #ef4444;">
+                            <div style="font-weight: 700; color: #7f1d1d; margin-bottom: 10px; font-size: 1.1em;">Batching</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Avg Batch Size:</strong> 1.2</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>KV Cache:</strong> 18.5 GB</div>
+                            <div style="color: #2d3748;"><strong>Queue Length:</strong> 127</div>
+                            <div style="color: #c53030; font-weight: 600; margin-top: 10px; font-size: 0.9em;">✗ Not batching, huge backlog!</div>
+                        </div>
+                        
+                        <div style="background: #fef2f2; padding: 20px; border-radius: 8px; border: 2px solid #ef4444;">
+                            <div style="font-weight: 700; color: #7f1d1d; margin-bottom: 10px; font-size: 1.1em;">Reliability</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>Success Rate:</strong> 94.2%</div>
+                            <div style="color: #2d3748; margin-bottom: 5px;"><strong>5xx Errors:</strong> 4.8%</div>
+                            <div style="color: #2d3748;"><strong>Timeouts:</strong> 3.2%</div>
+                            <div style="color: #c53030; font-weight: 600; margin-top: 10px; font-size: 0.9em;">✗ Service unstable!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="benefit-box" style="margin-top: 30px;">
+                <h4>🎯 The 30-Minute Validation Checklist</h4>
+                <p><strong>Tier 1 - Must Check (10 minutes):</strong></p>
+                <p style="margin-left: 20px;">1. Send test request → get coherent response</p>
+                <p style="margin-left: 20px;">2. GPU memory: 16-19 GB used (model loaded properly)</p>
+                <p style="margin-left: 20px;">3. Latency: p95 meets requirements</p>
+                <p style="margin-left: 20px;">4. No 5xx errors on test requests</p>
+                
+                <p style="margin-top: 15px;"><strong>Tier 2 - Should Check (10 minutes):</strong></p>
+                <p style="margin-left: 20px;">5. GPU utilization: 60-85% under load</p>
+                <p style="margin-left: 20px;">6. Average batch size: 8-32</p>
+                <p style="margin-left: 20px;">7. Load test: 100 concurrent requests for 5 min, no crashes</p>
+                
+                <p style="margin-top: 15px;"><strong>Tier 3 - Nice to Check (10 minutes):</strong></p>
+                <p style="margin-left: 20px;">8. GPU temperature under 85°C</p>
+                <p style="margin-left: 20px;">9. Queue length stays under 20</p>
+                <p style="margin-left: 20px;">10. Integration with your application works</p>
+            </div>
+            
+            <div class="benefit-box" style="margin-top: 20px; background: rgba(239, 68, 68, 0.1); border-color: #ef4444;">
+                <h4 style="color: #dc2626;">⚠️ Common Failure Modes to Watch For</h4>
+                <p><strong>OOM (Out of Memory) Crashes:</strong> GPU memory >23 GB → service crashes randomly under load</p>
+                <p style="margin-top: 10px;"><strong>Not Batching:</strong> Batch size ~1, GPU utilization <30% → wasting 90% of GPU, need 10x more instances</p>
+                <p style="margin-top: 10px;"><strong>Memory Leaks:</strong> GPU memory creeps up over hours → eventually crashes, needs restart</p>
+                <p style="margin-top: 10px;"><strong>Queue Buildup:</strong> Queue length keeps growing → can't keep up with traffic, need more instances</p>
+                <p style="margin-top: 10px;"><strong>Thermal Throttling:</strong> GPU >85°C → performance degrades automatically to cool down</p>
+            </div>
+        </div>
     </div>
 </body>
 </html>
