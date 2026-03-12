@@ -576,6 +576,133 @@ Uses 9,000 cores, takes 60ms (only 20% slower for 32x throughput!)
                 <p style="margin-top: 20px;"><strong>In interviews:</strong> Understanding where your work fits in the bigger MLOps picture shows maturity and helps you ask good questions about the team's workflow.</p>
             </div>
         </div>
+        
+        <div class="qa-section">
+            <div class="question">How do I validate that my model deployment is working correctly in production?</div>
+            <div class="answer">
+                <p>Deploying a model is only half the job - you need to validate it's actually working correctly. Here's a systematic approach across multiple dimensions:</p>
+                
+                <h3>1. Functional Validation (Does it work at all?)</h3>
+                <div class="example-box">
+                    <h4>Basic API Test:</h4>
+                    <p>Send a simple test request to your deployed model:</p>
+                    <p style="margin-top: 10px;"><code>curl http://your-instance:8000/v1/chat/completions -d '{"messages": [{"role": "user", "content": "What is 2+2?"}]}'</code></p>
+                    <p style="margin-top: 10px;"><strong>✅ Expected:</strong> Coherent response like "2+2 equals 4"</p>
+                    <p><strong>❌ Bad:</strong> Gibberish, timeout, or error response</p>
+                </div>
+                
+                <h3>2. Performance Validation (Is it fast enough?)</h3>
+                <p><strong>Latency measurement:</strong> Time 100 requests and calculate percentiles (p50, p95, p99)</p>
+                <div class="example-box">
+                    <h4>Expected Latency:</h4>
+                    <p><strong>PyTorch FP16:</strong> ~50-100ms (p95)</p>
+                    <p><strong>TensorRT FP16:</strong> ~10-20ms (p95)</p>
+                    <p><strong>Warning sign:</strong> >200ms consistently means something's misconfigured</p>
+                </div>
+                
+                <p><strong>Throughput measurement:</strong> Send 100 concurrent requests, measure requests/second</p>
+                
+                <h3>3. Resource Utilization (Is hardware used efficiently?)</h3>
+                
+                <div class="code-block">
+# Check GPU metrics
+nvidia-smi
+
+✅ Healthy Metrics:
+GPU Memory:      16-19 GB / 24 GB (66-79%)
+GPU Utilization: 60-85% under load
+Temperature:     60-80°C
+Power Usage:     150-250W (A10G max: 300W)
+
+❌ Warning Signs:
+GPU Memory:      >23 GB (risk of OOM crash)
+GPU Utilization: <20% (not batching, wasting money)
+Temperature:     >85°C (cooling issue)
+                </div>
+                
+                <h3>4. Batching Validation (Is batching working?)</h3>
+                <p>Check your serving platform's metrics (vLLM or Triton):</p>
+                
+                <div class="example-box">
+                    <h4>Good Batching Indicators:</h4>
+                    <p><strong>Average batch size:</strong> 8-32 (requests being combined efficiently)</p>
+                    <p><strong>GPU utilization:</strong> Spikes to 80-90% when processing batches</p>
+                    <p><strong>Queue length:</strong> 0-10 requests waiting</p>
+                    <p style="margin-top: 10px;"><strong>Bad:</strong> Batch size of 1-2 means batching isn't working - you're wasting 90% of your GPU!</p>
+                </div>
+                
+                <h3>5. Error Rate Monitoring (Is it reliable?)</h3>
+                
+                <div class="comparison-table">
+                    <table style="width: 100%;">
+                        <tr>
+                            <th>Metric</th>
+                            <th>Healthy</th>
+                            <th>Unhealthy</th>
+                        </tr>
+                        <tr>
+                            <td>Success rate (200 OK)</td>
+                            <td>>99.5%</td>
+                            <td><95%</td>
+                        </tr>
+                        <tr>
+                            <td>Server errors (5xx)</td>
+                            <td><0.2%</td>
+                            <td>>1%</td>
+                        </tr>
+                        <tr>
+                            <td>Timeouts</td>
+                            <td><0.1%</td>
+                            <td>>2%</td>
+                        </tr>
+                        <tr>
+                            <td>Request queue</td>
+                            <td>0-10</td>
+                            <td>>50</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <h3>6. Load Testing (Can it handle realistic traffic?)</h3>
+                <p><strong>Sustained load test:</strong> Simulate 100 concurrent users for 10 minutes</p>
+                <div class="example-box">
+                    <h4>What to Watch:</h4>
+                    <p>✅ Latency stays stable over time (no memory leaks)</p>
+                    <p>✅ Error rate stays below 0.5%</p>
+                    <p>✅ No OOM crashes</p>
+                    <p>✅ GPU memory stays below 23 GB</p>
+                </div>
+                
+                <p><strong>Burst test:</strong> Simulate traffic spike (500 requests in 30 seconds) to test bursty traffic handling</p>
+                
+                <h3>The 30-Minute Validation Checklist</h3>
+                <p>If you only have limited time, check these essentials:</p>
+                
+                <div class="example-box">
+                    <h4>Tier 1 - Must Check (10 min):</h4>
+                    <p>1. Send test request → get coherent response</p>
+                    <p>2. GPU memory: 16-19 GB used (model loaded properly)</p>
+                    <p>3. Latency: p95 meets requirements</p>
+                    <p>4. No 5xx errors on test requests</p>
+                </div>
+                
+                <div class="example-box" style="margin-top: 15px;">
+                    <h4>Tier 2 - Should Check (10 min):</h4>
+                    <p>5. GPU utilization: 60-85% under load</p>
+                    <p>6. Average batch size: 8-32</p>
+                    <p>7. Load test: 100 concurrent requests for 5 min, no crashes</p>
+                </div>
+                
+                <div class="example-box" style="margin-top: 15px;">
+                    <h4>Tier 3 - Nice to Check (10 min):</h4>
+                    <p>8. GPU temperature under 85°C</p>
+                    <p>9. Queue length stays under 20</p>
+                    <p>10. Integration with your actual application works</p>
+                </div>
+                
+                <p style="margin-top: 20px;"><strong>Key insight:</strong> A "deployed" model that crashes under load, has 5% error rate, or uses only 10% of GPU isn't really production-ready. Validation ensures you're not just running, but running <em>correctly and efficiently</em>.</p>
+            </div>
+        </div>
     </div>
 </body>
 </html>
