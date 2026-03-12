@@ -217,7 +217,227 @@
                 <p>Your 7B chatbot has been running successfully on g5.xlarge for 3 months. The data science team trained a better model (same 7B size, better quality). You need to deploy the new model with zero downtime and be able to roll back if issues arise.</p>
                 <p style="margin-top: 15px;"><strong>Your task:</strong> Plan the upgrade strategy. How do you deploy the new model, validate it, and ensure you can rollback safely?</p>
             </div>
-            <button class="toggle-solution" disabled>Solution Coming Soon 🚧</button>
+            <button class="toggle-solution" onclick="toggleSolution(2)">Show Solution ▼</button>
+            
+            <div class="solution-content" id="solution-2">
+                <div class="step-header">Step 1: Clarify Requirements & Constraints</div>
+                <div class="solution-text">
+                    <p><strong>What we know:</strong></p>
+                    <ul>
+                        <li>Same model size (7B) → Same VRAM requirements (18-20GB total)</li>
+                        <li>Currently in production serving real users</li>
+                        <li><strong>Zero downtime required</strong></li>
+                        <li><strong>Must be able to rollback quickly</strong></li>
+                    </ul>
+                    
+                    <p style="margin-top: 15px;"><strong>Assumptions:</strong></p>
+                    <ul>
+                        <li>Same 100 concurrent users from Scenario 1</li>
+                        <li>Business hours traffic (9am-5pm peak)</li>
+                        <li>Rollback within minutes if critical issues found</li>
+                    </ul>
+                    
+                    <div class="recommendation-box" style="margin-top: 20px;">
+                        <div class="recommendation-title">✅ Key Insight: Can't Run Both Models on Same GPU</div>
+                        <p>Two 7B models = 28GB VRAM needed<br>
+                        g5.xlarge has 24GB VRAM<br>
+                        → <strong>Must use separate instances for blue-green deployment</strong></p>
+                        <p style="margin-top: 10px;">This isn't just best practice - it's technically required due to VRAM constraints.</p>
+                    </div>
+                </div>
+                
+                <div class="step-header">Step 2: Deployment Strategy - Blue-Green with Canary</div>
+                <div class="solution-text">
+                    <p><strong>Infrastructure Setup:</strong></p>
+                    <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin: 15px 0; font-family: monospace; font-size: 0.95em;">
+Current (1 instance):
+┌─────────────────┐
+│ g5.xlarge       │  ← 100% traffic
+│ Old Model (7B)  │
+│ vLLM serving    │
+└─────────────────┘
+
+During Deployment (2 instances):
+┌─────────────────┐     ┌─────────────────┐
+│ g5.xlarge       │     │ g5.xlarge       │
+│ Old Model       │     │ New Model       │
+└─────────────────┘     └─────────────────┘
+    ↓ 95% traffic           ↓ 5% traffic (canary)
+    
+Load Balancer with weighted routing
+
+After Cleanup (1 instance):
+┌─────────────────┐
+│ g5.xlarge       │  ← 100% traffic
+│ New Model       │
+└─────────────────┘
+                    </div>
+                    
+                    <p><strong>Cost:</strong> 2× $1/hr = $2/hr during 4-6 hour rollout = ~$8-12 total</p>
+                </div>
+                
+                <div class="step-header">Step 3: Rollout Phases</div>
+                <div class="solution-text">
+                    <p><strong>Phase 1: Pre-deployment Validation (Day 1, Off Production)</strong></p>
+                    <div style="background: #f0fff4; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #48bb78;">
+                        <p><strong>1. Deploy new model to second g5.xlarge</strong></p>
+                        <p style="margin-left: 20px; margin-top: 5px;">Spin up new instance, load new model with vLLM</p>
+                        
+                        <p style="margin-top: 15px;"><strong>2. Offline Testing</strong></p>
+                        <ul style="margin-left: 40px; margin-top: 5px;">
+                            <li>Smoke tests: Model loads, responds correctly</li>
+                            <li>Latency tests: p95 < 100ms target</li>
+                            <li>Load test: Handle 100 concurrent users</li>
+                            <li>GPU memory check: Stays under 20GB</li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>3. Shadow Testing (CRITICAL STEP)</strong></p>
+                        <p style="margin-left: 20px; margin-top: 5px;">Route 10% of production traffic to BOTH models</p>
+                        <p style="margin-left: 20px;">→ Users see OLD model responses (no risk)</p>
+                        <p style="margin-left: 20px;">→ NEW model responses logged for comparison</p>
+                        <p style="margin-left: 20px;">→ Run for 2-4 hours, analyze differences offline</p>
+                        <p style="margin-left: 20px; margin-top: 10px; color: #22543d; font-weight: 600;">This catches issues without user-facing risk!</p>
+                    </div>
+                    
+                    <p style="margin-top: 20px;"><strong>Phase 2: Canary Rollout (Day 2, Off-Peak Hours)</strong></p>
+                    <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin: 15px 0; font-family: monospace; font-size: 0.9em;">
+Hour 1:  Old: 95% │ New: 5%    ← Monitor closely
+Hour 2:  Old: 85% │ New: 15%   ← If metrics good
+Hour 3:  Old: 50% │ New: 50%   ← Confidence building  
+Hour 4:  Old: 10% │ New: 90%   ← Almost there
+Hour 5:  Old: 0%  │ New: 100%  ← Full cutover
+
+Keep old instance running for 24 hours (quick rollback available)
+                    </div>
+                    
+                    <p><strong>Acceptance criteria at each canary step:</strong></p>
+                    <ul style="margin-left: 20px;">
+                        <li>Error rate < 0.5% (was <0.2% baseline)</li>
+                        <li>p95 latency < 100ms (same as old model)</li>
+                        <li>p99 latency < 150ms</li>
+                        <li>GPU memory < 20GB (safe margin from 24GB)</li>
+                        <li>Batch size averaging 8-32 (batching working)</li>
+                        <li>No user complaints or support tickets</li>
+                    </ul>
+                    
+                    <p style="margin-top: 15px;"><strong>Phase 3: Cleanup (Day 3)</strong></p>
+                    <p style="margin-left: 20px;">If no issues after 24 hours at 100%:</p>
+                    <ul style="margin-left: 40px;">
+                        <li>Terminate old model instance</li>
+                        <li>Update deployment docs to new model as default</li>
+                        <li>Archive old model for compliance</li>
+                    </ul>
+                </div>
+                
+                <div class="step-header">Step 4: Rollback Strategy</div>
+                <div class="solution-text">
+                    <p><strong>Automated Rollback Triggers:</strong></p>
+                    <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ef4444;">
+                        <p><strong>IF any of these conditions:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Error rate > 1% (baseline was <0.2%)</li>
+                            <li>p95 latency > 150ms (baseline was <100ms)</li>
+                            <li>GPU OOM errors detected</li>
+                            <li>5xx error rate spikes > 2%</li>
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>THEN automatically:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>Alert on-call engineer</li>
+                            <li>Shift traffic: New model → 0%</li>
+                            <li>All traffic back to old model (~30 sec)</li>
+                            <li>Keep new instance running for debugging</li>
+                        </ul>
+                    </div>
+                    
+                    <p style="margin-top: 15px;"><strong>Manual Rollback (Single Command):</strong></p>
+                    <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin: 10px 0; font-family: monospace; font-size: 0.9em;">
+# At load balancer - shift all traffic back to old model
+aws elbv2 modify-target-group \
+  --target-group-arn &lt;new-model-tg&gt; \
+  --weight 0
+
+# Takes effect in ~30 seconds
+# All traffic back to old model
+                    </div>
+                </div>
+                
+                <div class="step-header">Step 5: Monitoring & Validation</div>
+                <div class="solution-text">
+                    <p><strong>Metrics Dashboard (Old vs New Side-by-Side):</strong></p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                        <div style="background: #f7fafc; padding: 15px; border-radius: 8px;">
+                            <strong style="color: #2d3748;">Performance Metrics</strong>
+                            <ul style="margin-left: 20px; margin-top: 10px; font-size: 0.95em;">
+                                <li>Latency: p50, p95, p99</li>
+                                <li>Throughput: req/s</li>
+                                <li>Error rate: 2xx, 4xx, 5xx</li>
+                            </ul>
+                        </div>
+                        <div style="background: #f7fafc; padding: 15px; border-radius: 8px;">
+                            <strong style="color: #2d3748;">Resource Metrics</strong>
+                            <ul style="margin-left: 20px; margin-top: 10px; font-size: 0.95em;">
+                                <li>GPU memory usage</li>
+                                <li>GPU utilization %</li>
+                                <li>Batch size distribution</li>
+                            </ul>
+                        </div>
+                        <div style="background: #f7fafc; padding: 15px; border-radius: 8px;">
+                            <strong style="color: #2d3748;">Quality Metrics</strong>
+                            <ul style="margin-left: 20px; margin-top: 10px; font-size: 0.95em;">
+                                <li>User satisfaction (if tracked)</li>
+                                <li>Conversation completion rate</li>
+                                <li>Response coherence scores</li>
+                            </ul>
+                        </div>
+                        <div style="background: #f7fafc; padding: 15px; border-radius: 8px;">
+                            <strong style="color: #2d3748;">Business Metrics</strong>
+                            <ul style="margin-left: 20px; margin-top: 10px; font-size: 0.95em;">
+                                <li>User engagement time</li>
+                                <li>Feature usage patterns</li>
+                                <li>Support ticket volume</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mistake-box">
+                    <div class="mistake-title">🎓 Key Learning Points - What Makes This ML-Specific</div>
+                    <div class="solution-text">
+                        <p><strong>1. VRAM Constraint Forces Infrastructure Decision</strong></p>
+                        <p style="margin-left: 20px;">Unlike web services where you can run multiple app versions on one server, you CANNOT fit two 7B models in 24GB VRAM (need 28GB). Blue-green requires a second instance - not optional, technically required.</p>
+                        
+                        <p style="margin-top: 15px;"><strong>2. Shadow Testing Before Canary</strong></p>
+                        <p style="margin-left: 20px;">For web services, you might go straight to canary. For ML, run shadow testing first - both models process requests, but only old model's responses served. Validates quality without user-facing risk.</p>
+                        
+                        <p style="margin-top: 15px;"><strong>3. ML-Specific Metrics Matter</strong></p>
+                        <p style="margin-left: 20px;">Don't just track "latency" - track p95/p99 distribution. Don't just check "it works" - check GPU memory stays <20GB, batch size maintains 8-32, and quality metrics if available.</p>
+                        
+                        <p style="margin-top: 15px;"><strong>4. Session Stickiness for Consistency</strong></p>
+                        <p style="margin-left: 20px;">During canary, use sticky sessions so same user always gets same model. Prevents confusing UX where responses change mid-conversation. Not needed for rollback - just shift traffic to 0%.</p>
+                        
+                        <p style="margin-top: 20px; color: #667eea; font-weight: 600;">Interview Tip: Frame deployment strategies with ML constraints (VRAM, GPU memory, inference latency) to show you understand this isn't just generic DevOps.</p>
+                    </div>
+                </div>
+                
+                <div class="recommendation-box">
+                    <div class="recommendation-title">✅ Complete Interview Answer</div>
+                    <div class="solution-text">
+                        <p style="font-style: italic;">"For zero-downtime upgrade with rollback capability, I'd use blue-green deployment with canary rollout."</p>
+                        
+                        <p style="margin-top: 15px;"><strong>First, the constraint:</strong> Two 7B models need 28GB VRAM, but g5.xlarge only has 24GB. So I must spin up a second instance temporarily - can't run both models on one GPU.</p>
+                        
+                        <p style="margin-top: 15px;"><strong>Phase 1 - Shadow testing:</strong> Deploy new model to second g5.xlarge. Route 10% of production traffic to BOTH models but only serve old model's responses. Compare outputs offline for 2-4 hours. This validates quality without user-facing risk.</p>
+                        
+                        <p style="margin-top: 15px;"><strong>Phase 2 - Canary rollout:</strong> Use load balancer with weighted routing. Start at 5% new model during off-peak hours, monitor for 1 hour. If metrics healthy (error rate <0.5%, p95 latency <100ms, GPU memory <20GB), progress to 15%, then 50%, 90%, 100%.</p>
+                        
+                        <p style="margin-top: 15px;"><strong>Phase 3 - Automated rollback:</strong> Set alerts on error rate spikes, latency degradation, or GPU OOM. If triggered, auto-rollback shifts traffic to 0% new model in ~30 seconds. Keep old instance running 24 hours for quick manual rollback if needed.</p>
+                        
+                        <p style="margin-top: 15px;"><strong>Cost:</strong> ~$8-12 for the 4-6 hour rollout (two instances), then back to single instance."</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
         
         <div class="scenario-card">
