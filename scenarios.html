@@ -478,7 +478,151 @@ aws elbv2 modify-target-group \
                 <p>Your team wants to upgrade from the 7B model to a 13B model for better quality. The 13B model in FP16 is 26GB, which won't fit on your current g5.xlarge (24GB VRAM). Budget is a concern.</p>
                 <p style="margin-top: 15px;"><strong>Your task:</strong> What options do you have? Consider instance types, precision formats, and trade-offs. What would you recommend?</p>
             </div>
-            <button class="toggle-solution" disabled>Solution Coming Soon 🚧</button>
+            <button class="toggle-solution" onclick="toggleSolution(3)">Show Solution ▼</button>
+            
+            <div class="solution-content" id="solution-3">
+                <div class="step-header">Step 1: Calculate Requirements</div>
+                <div class="solution-text">
+                    <p><strong>13B model VRAM calculation:</strong></p>
+                    <div style="background: #f7fafc; padding: 20px; border-radius: 8px; margin: 15px 0; font-family: monospace;">
+Model weights: 13B × 2 bytes (FP16) = 26 GB
+Activations: ~3 GB
+Batching buffer: ~1 GB
+KV cache: ~3-5 GB
+──────────────────────────────────
+Total VRAM needed: 33-35 GB
+                    </div>
+                    <div class="mistake-box">
+                        <div class="mistake-title">❌ Problem: Current Infrastructure Won't Work</div>
+                        <div class="solution-text">
+                            <p><strong>Current:</strong> g5.xlarge has 24GB VRAM</p>
+                            <p><strong>Needed:</strong> 33-35GB VRAM</p>
+                            <p style="margin-top: 10px; color: #c53030; font-weight: 600;">Model won't fit! Need new approach.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-header">Step 2: Options Analysis</div>
+                <div class="solution-text">
+                    <p><strong>Option A: Upgrade to Larger Instance</strong></p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                        <div style="background: #fef2f2; border: 2px solid #ef4444; padding: 15px; border-radius: 8px;">
+                            <strong style="color: #c53030;">g5.2xlarge</strong>
+                            <p style="margin-top: 8px;">VRAM: 24GB (same as g5.xlarge!)</p>
+                            <p style="color: #c53030; font-weight: 600;">❌ Won't help</p>
+                        </div>
+                        <div style="background: #f0fff4; border: 2px solid #48bb78; padding: 15px; border-radius: 8px;">
+                            <strong style="color: #22543d;">g5.12xlarge</strong>
+                            <p style="margin-top: 8px;">VRAM: 4× 24GB = 96GB total</p>
+                            <p style="margin-top: 5px;">Cost: $5/hr = $3,600/month</p>
+                            <p style="color: #22543d; font-weight: 600;">✅ Fits easily</p>
+                        </div>
+                    </div>
+                    
+                    <p style="margin-top: 20px;"><strong>Option B: Use Lower Precision (FP8)</strong></p>
+                    <div style="background: #f0fff4; border: 2px solid #48bb78; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                        <strong style="color: #22543d; font-size: 1.1em;">FP8 Optimization</strong>
+                        <div style="margin-top: 15px; font-family: monospace; background: white; padding: 15px; border-radius: 6px;">
+13B × 1 byte (FP8) = 13 GB
++ Activations: ~2 GB
++ Batching: ~1 GB
++ KV cache: ~2-3 GB
+──────────────────────
+Total: 18-20 GB ✅ Fits on g5.xlarge!
+                        </div>
+                        <p style="margin-top: 15px;"><strong>Trade-offs:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Memory: 50% reduction (35GB → 18GB)</li>
+                            <li>Speed: 2x faster inference</li>
+                            <li>Accuracy: ~5% degradation (95% of FP16 quality)</li>
+                            <li>Cost: Same as current ($720/month)</li>
+                        </ul>
+                    </div>
+                    
+                    <p style="margin-top: 20px;"><strong>Option C: Quantization (INT8)</strong></p>
+                    <div style="background: #fef2f2; border: 2px solid #f6ad55; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                        <p><strong>Even more aggressive compression</strong></p>
+                        <p style="margin-top: 8px;">Size: 13GB (same as FP8)</p>
+                        <p>Accuracy: ~10% degradation</p>
+                        <p style="margin-top: 10px; color: #c53030;">⚠️ Only if FP8 quality unacceptable and budget critical</p>
+                    </div>
+                </div>
+                
+                <div class="step-header">Step 3: Decision Framework</div>
+                <div class="solution-text">
+                    <div style="background: white; border: 2px solid #e2e8f0; padding: 25px; border-radius: 8px; margin: 20px 0;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr style="background: #f7fafc;">
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">Option</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">Cost</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">Quality</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e2e8f0;">Speed</th>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;"><strong>FP8 on g5.xlarge</strong></td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">$720/mo</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">95% of FP16</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">2x faster</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;"><strong>FP16 on g5.12xlarge</strong></td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">$3,600/mo</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">100% quality</td>
+                                <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">Baseline</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px;"><strong>INT8 on g5.xlarge</strong></td>
+                                <td style="padding: 12px;">$720/mo</td>
+                                <td style="padding: 12px;">90% of FP16</td>
+                                <td style="padding: 12px;">2x faster</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="recommendation-box">
+                    <div class="recommendation-title">✅ Recommended Approach: Try FP8 First</div>
+                    <div class="solution-text">
+                        <p><strong>Phase 1: Deploy 13B in FP8 on g5.xlarge</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Cost: Same as current ($720/month)</li>
+                            <li>Speed: 2x faster than FP16</li>
+                            <li>Quality: Test with A/B against 7B FP16</li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>Phase 2: Validate Quality</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Run shadow testing (both models on 10% traffic)</li>
+                            <li>Compare user satisfaction scores</li>
+                            <li>If 13B FP8 ≥ 7B FP16: Deploy! You win.</li>
+                            <li>If 13B FP8 < 7B FP16: Proceed to Phase 3</li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>Phase 3: If FP8 Quality Unacceptable</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Upgrade to g5.12xlarge for FP16</li>
+                            <li>Cost: 5x increase ($3,600/month)</li>
+                            <li>Benefit: Can serve 4-5x more traffic (4 GPUs)</li>
+                        </ul>
+                        
+                        <p style="margin-top: 20px; color: #22543d; font-weight: 600;">Rationale: Always try precision optimization before scaling hardware. FP8 gives 95% quality at 0% cost increase - worth testing!</p>
+                    </div>
+                </div>
+                
+                <div class="mistake-box">
+                    <div class="mistake-title">🎓 Key Learning: Precision Optimization Before Hardware Scaling</div>
+                    <div class="solution-text">
+                        <p><strong>Common mistake:</strong> Immediately upgrading to g5.12xlarge (5x cost) without trying FP8 first.</p>
+                        <p style="margin-top: 15px;"><strong>Better approach:</strong></p>
+                        <ol style="margin-left: 20px; margin-top: 10px;">
+                            <li>Try FP8 on existing hardware (free to test)</li>
+                            <li>Validate quality with A/B testing</li>
+                            <li>Only upgrade hardware if quality unacceptable</li>
+                        </ol>
+                        <p style="margin-top: 15px;"><strong>Real-world result:</strong> Most production LLMs run FP8 or even INT8 with minimal quality impact. You might never need that g5.12xlarge!</p>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="scenario-card">
@@ -490,7 +634,56 @@ aws elbv2 modify-target-group \
                 <p>You built the chatbot backend in Python with FastAPI. It's working fine at 100 requests/second, but now traffic has grown to 1,000 requests/second and you're seeing performance issues. The Python GIL is becoming a bottleneck in request orchestration.</p>
                 <p style="margin-top: 15px;"><strong>Your task:</strong> How do you fix this? Consider language options, concurrency strategies, and architectural changes.</p>
             </div>
-            <button class="toggle-solution" disabled>Solution Coming Soon 🚧</button>
+            <button class="toggle-solution" onclick="toggleSolution(4)">Show Solution ▼</button>
+            
+
+            <div class="solution-content" id="solution-4">
+                <div class="step-header">Problem: Python GIL Bottleneck</div>
+                <div class="solution-text">
+                    <p><strong>Current state:</strong> FastAPI + manual PyTorch model loading</p>
+                    <p><strong>Bottleneck:</strong> Python GIL limits request orchestration to ~100 req/s</p>
+                    <p><strong>Model inference is fast</strong> (C++ PyTorch), but request handling (Python) is slow.</p>
+                </div>
+                
+                <div class="recommendation-box">
+                    <div class="recommendation-title">✅ Solution: Switch to vLLM (Immediate Fix)</div>
+                    <div class="solution-text">
+                        <p><strong>Why you're hitting this:</strong> You built custom FastAPI wrapper when you should have used vLLM from the start!</p>
+                        <p style="margin-top: 15px;"><strong>vLLM handles:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Request orchestration in optimized C++</li>
+                            <li>Supports 1,000+ req/s easily</li>
+                            <li>Built-in batching and KV cache</li>
+                            <li>OpenAI-compatible API</li>
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>Migration time:</strong> 1 day to replace FastAPI with vLLM</p>
+                        <p style="margin-top: 10px; font-weight: 600; color: #22543d;">This is what you should have used from Scenario 1!</p>
+                    </div>
+                </div>
+                
+                <div class="step-header">Alternative Solutions (If You Must Keep FastAPI)</div>
+                <div class="solution-text">
+                    <p><strong>Option B: Multi-process Python</strong></p>
+                    <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin: 10px 0; font-family: monospace;">
+gunicorn -w 8 -k uvicorn.workers.UvicornWorker app:app
+# 8 workers = 8 processes, bypasses GIL
+# Problem: Each loads model (wastes memory)
+                    </div>
+                    
+                    <p style="margin-top: 15px;"><strong>Option C: Add Queue Layer (Redis/RabbitMQ)</strong></p>
+                    <p style="margin-left: 20px;">FastAPI → Queue → Worker processes</p>
+                    <p style="margin-left: 20px;">More complex, only if you have very custom logic</p>
+                </div>
+                
+                <div class="mistake-box">
+                    <div class="mistake-title">🎓 Key Learning: Use Purpose-Built Tools</div>
+                    <div class="solution-text">
+                        <p><strong>Don't reinvent the wheel.</strong> vLLM is designed for LLM serving. Use it instead of custom FastAPI wrappers.</p>
+                        <p style="margin-top: 10px;">This problem wouldn't exist if you'd chosen vLLM in Scenario 1!</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
         
         <div class="scenario-card">
@@ -502,7 +695,52 @@ aws elbv2 modify-target-group \
                 <p>You're running a 70B model serving 5,000 requests/second on 10× g5.12xlarge instances ($600/month each = $6,000/month). Leadership demands a 50% cost reduction ($3,000/month) without sacrificing throughput or increasing latency beyond 10%.</p>
                 <p style="margin-top: 15px;"><strong>Your task:</strong> How do you cut costs in half? Consider all optimization levers: precision, batching, instance types, architectural changes.</p>
             </div>
-            <button class="toggle-solution" disabled>Solution Coming Soon 🚧</button>
+            <button class="toggle-solution" onclick="toggleSolution(5)">Show Solution ▼</button>
+            
+
+            <div class="solution-content" id="solution-5">
+                <div class="step-header">Current State Analysis</div>
+                <div class="solution-text">
+                    <ul>
+                        <li>70B model in FP16 = 140GB VRAM</li>
+                        <li>10× g5.12xlarge @ $600/month each = $6,000/month</li>
+                        <li>Serving 5,000 req/s</li>
+                        <li><strong>Target: $3,000/month (50% reduction)</strong></li>
+                    </ul>
+                </div>
+                
+                <div class="recommendation-box">
+                    <div class="recommendation-title">✅ Solution: FP8 + Spot Instances + Batching</div>
+                    <div class="solution-text">
+                        <p><strong>Step 1: Convert to FP8</strong></p>
+                        <p style="margin-left: 20px;">70B × 1 byte = 70GB (was 140GB)</p>
+                        <p style="margin-left: 20px;">Can fit on 2× g5.12xlarge instead of 10×</p>
+                        
+                        <p style="margin-top: 15px;"><strong>Step 2: Optimize Batching</strong></p>
+                        <p style="margin-left: 20px;">Increase batch_size: 32 → 64</p>
+                        <p style="margin-left: 20px;">2x throughput per instance</p>
+                        
+                        <p style="margin-top: 15px;"><strong>Step 3: Use Spot Instances</strong></p>
+                        <p style="margin-left: 20px;">Spot = 60-70% discount vs on-demand</p>
+                        <p style="margin-left: 20px;">5× g5.12xlarge spot @ $300/month = $1,500/month</p>
+                        
+                        <p style="margin-top: 20px; font-weight: 700; color: #22543d; font-size: 1.1em;">Result: $1,500/month (75% reduction!)</p>
+                        <p style="margin-top: 10px;">✅ Exceeds 50% target</p>
+                        <p>✅ Throughput maintained via larger batches</p>
+                        <p>✅ Latency impact: ~5% (within 10% limit)</p>
+                    </div>
+                </div>
+                
+                <div class="mistake-box">
+                    <div class="mistake-title">⚠️ Risks & Mitigations</div>
+                    <div class="solution-text">
+                        <p><strong>Spot interruption:</strong> Use multiple spot instance pools, auto-restart</p>
+                        <p><strong>FP8 accuracy:</strong> A/B test first, validate quality metrics</p>
+                        <p><strong>Larger batches:</strong> Monitor p99 latency carefully</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
         
         <div class="scenario-card">
@@ -514,7 +752,62 @@ aws elbv2 modify-target-group \
                 <p>Your chatbot's p95 latency has crept up from 50ms to 200ms over the past month. Users are complaining. You can't change the model (it's the right size and quality). You need to get back to <50ms p95.</p>
                 <p style="margin-top: 15px;"><strong>Your task:</strong> Debug and fix the latency issue. What would you investigate? What optimizations would you try?</p>
             </div>
-            <button class="toggle-solution" disabled>Solution Coming Soon 🚧</button>
+            <button class="toggle-solution" onclick="toggleSolution(6)">Show Solution ▼</button>
+            
+
+            <div class="solution-content" id="solution-6">
+                <div class="step-header">Systematic Debugging</div>
+                <div class="solution-text">
+                    <p><strong>Latency crept up over time</strong> (50ms → 200ms) suggests degradation, not sudden change.</p>
+                    
+                    <p style="margin-top: 15px;"><strong>Most Common Causes:</strong></p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+                        <div style="background: #fef2f2; border: 2px solid #ef4444; padding: 15px; border-radius: 8px;">
+                            <strong>1. KV Cache Memory Leak</strong>
+                            <p style="margin-top: 8px;">GPU memory: 18GB → 23GB over days</p>
+                            <p style="color: #c53030; font-weight: 600;">Fix: Restart vLLM service</p>
+                        </div>
+                        <div style="background: #fef2f2; border: 2px solid #ef4444; padding: 15px; border-radius: 8px;">
+                            <strong>2. Reverted to PyTorch</strong>
+                            <p style="margin-top: 8px;">Not using TensorRT anymore</p>
+                            <p style="color: #c53030; font-weight: 600;">Fix: Re-deploy .trt model</p>
+                        </div>
+                        <div style="background: #fef2f2; border: 2px solid #ef4444; padding: 15px; border-radius: 8px;">
+                            <strong>3. Batch Size Dropped</strong>
+                            <p style="margin-top: 8px;">Was 32, now 1-2</p>
+                            <p style="color: #c53030; font-weight: 600;">Fix: Check vLLM config</p>
+                        </div>
+                        <div style="background: #fef2f2; border: 2px solid #ef4444; padding: 15px; border-radius: 8px;">
+                            <strong>4. GPU Thermal Throttling</strong>
+                            <p style="margin-top: 8px;">Temperature >85°C</p>
+                            <p style="color: #c53030; font-weight: 600;">Fix: Check cooling</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="recommendation-box">
+                    <div class="recommendation-title">✅ Investigation Checklist</div>
+                    <div class="solution-text">
+                        <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin: 10px 0; font-family: monospace; font-size: 0.9em;">
+# 1. Check GPU memory over time
+nvidia-smi dmon -s mu
+
+# 2. Check vLLM metrics  
+curl http://instance:8000/metrics
+
+# 3. Verify TensorRT model
+ls -lh /models/model.trt
+
+# 4. Check batch size config
+cat /etc/vllm/config.yaml
+                        </div>
+                        <p style="margin-top: 15px;"><strong>Quick Fix (Try First):</strong></p>
+                        <p style="margin-left: 20px; font-family: monospace;">systemctl restart vllm</p>
+                        <p style="margin-left: 20px;">If latency drops to 50ms → was memory leak!</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
         
         <div class="scenario-card">
@@ -526,7 +819,51 @@ aws elbv2 modify-target-group \
                 <p>Your product went viral overnight. Traffic jumped from 1,000 requests/second to 10,000-15,000 requests/second. Your current deployment (3× g5.xlarge) is melting down with 30% error rate and 2-second latencies.</p>
                 <p style="margin-top: 15px;"><strong>Your task:</strong> You have 4 hours to stabilize. What's your emergency response plan? Then, what's your sustainable scaling strategy?</p>
             </div>
-            <button class="toggle-solution" disabled>Solution Coming Soon 🚧</button>
+            <button class="toggle-solution" onclick="toggleSolution(7)">Show Solution ▼</button>
+            
+
+            <div class="solution-content" id="solution-7">
+                <div class="step-header">Emergency Response (First 4 Hours)</div>
+                <div class="solution-text">
+                    <p><strong>Current:</strong> 3× g5.xlarge handling 1,000 req/s = ~333 req/s per instance</p>
+                    <p><strong>Need:</strong> 15,000 req/s ÷ 333 = <strong>45 instances minimum</strong></p>
+                    <p style="margin-top: 10px;"><strong>With margin:</strong> Deploy 50 instances</p>
+                    
+                    <div style="background: #fef2f2; border: 2px solid #ef4444; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <p style="font-weight: 700; color: #c53030; font-size: 1.1em;">Hour 1: Scale FAST</p>
+                        <div style="background: white; padding: 15px; border-radius: 6px; margin-top: 15px; font-family: monospace; font-size: 0.9em;">
+# Launch 47 more instances
+for i in {1..47}; do
+    aws ec2 run-instances         --instance-type g5.xlarge         --image-id ami-xxx
+done
+
+# Add to load balancer
+aws elbv2 register-targets --targets ...
+
+# Enable autoscaling  
+aws autoscaling create-auto-scaling-group     --min-size 45 --max-size 60
+                        </div>
+                        <p style="margin-top: 15px;"><strong>Cost:</strong> 50× $1/hr = $36,000/month (temporary!)</p>
+                    </div>
+                </div>
+                
+                <div class="recommendation-box">
+                    <div class="recommendation-title">✅ Hours 2-4: Optimize Costs</div>
+                    <div class="solution-text">
+                        <p><strong>Switch to spot instances (70% discount):</strong></p>
+                        <p style="margin-left: 20px;">10× on-demand (baseline) + 40× spot (burstable)</p>
+                        <p style="margin-left: 20px;">Cost: $15/hr = $10,800/month</p>
+                        
+                        <p style="margin-top: 15px;"><strong>Increase batch size (32 → 64):</strong></p>
+                        <p style="margin-left: 20px;">2x throughput per instance</p>
+                        <p style="margin-left: 20px;">Need only 25 instances instead of 50</p>
+                        <p style="margin-left: 20px;">Cost: $18,000/month on-demand or $5,400/month spot</p>
+                        
+                        <p style="margin-top: 20px; font-weight: 700; color: #22543d;">Sustainable: 15 on-demand + autoscale 0-40 spot = $15,800-25,800/month</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
         
         <div class="scenario-card">
@@ -538,7 +875,51 @@ aws elbv2 modify-target-group \
                 <p>Your chatbot users are global. US users get great latency (20ms), but EU users see 300ms+ due to cross-Atlantic traffic. You need to deploy to EU region while keeping costs reasonable and maintaining consistency.</p>
                 <p style="margin-top: 15px;"><strong>Your task:</strong> Design a multi-region deployment. How do you handle model synchronization, traffic routing, and cost optimization?</p>
             </div>
-            <button class="toggle-solution" disabled>Solution Coming Soon 🚧</button>
+            <button class="toggle-solution" onclick="toggleSolution(8)">Show Solution ▼</button>
+            
+
+            <div class="solution-content" id="solution-8">
+                <div class="step-header">Multi-Region Architecture</div>
+                <div class="solution-text">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                        <div style="background: white; border: 2px solid #4299e1; padding: 20px; border-radius: 8px;">
+                            <strong style="color: #2c5282; font-size: 1.1em;">US Region (us-east-1)</strong>
+                            <div style="margin-top: 15px;">
+                                <div style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 10px;">
+                                    5× g5.xlarge<br>7B Model (vLLM)
+                                </div>
+                                <p style="text-align: center; color: #4a5568;">US Users: 20ms latency</p>
+                            </div>
+                        </div>
+                        <div style="background: white; border: 2px solid #48bb78; padding: 20px; border-radius: 8px;">
+                            <strong style="color: #22543d; font-size: 1.1em;">EU Region (eu-west-1)</strong>
+                            <div style="margin-top: 15px;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 6px; text-align: center; margin-bottom: 10px;">
+                                    3× g5.xlarge<br>7B Model (vLLM)
+                                </div>
+                                <p style="text-align: center; color: #4a5568;">EU Users: 20ms latency</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; font-weight: 600; color: #667eea;">Route53 Geo-Routing: US users → US region, EU users → EU region</p>
+                </div>
+                
+                <div class="recommendation-box">
+                    <div class="recommendation-title">✅ Implementation Strategy</div>
+                    <div class="solution-text">
+                        <p><strong>Traffic Routing:</strong> AWS Route53 geo-routing</p>
+                        <p><strong>Model Sync:</strong> Upload to S3, replicate cross-region</p>
+                        <p><strong>Deployment:</strong> Blue-green canary in each region (24hr gap acceptable)</p>
+                        <p><strong>Failover:</strong> If US down → route all to EU (auto-scale)</p>
+                        
+                        <p style="margin-top: 20px;"><strong>Cost:</strong></p>
+                        <p style="margin-left: 20px;">US: $3,600/month</p>
+                        <p style="margin-left: 20px;">EU: $2,160/month (or $1,500 with spot)</p>
+                        <p style="margin-left: 20px; font-weight: 700;">Total: $5,760/month (60% increase)</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
         
         <div class="scenario-card">
@@ -550,7 +931,46 @@ aws elbv2 modify-target-group \
                 <p>Your chatbot has been in production for 6 months. User satisfaction scores have dropped from 85% to 72%. The model hasn't changed, but the types of questions users ask have evolved. You're seeing more errors and "I don't know" responses.</p>
                 <p style="margin-top: 15px;"><strong>Your task:</strong> How do you detect and address model drift? What metrics would you track? When do you retrain vs fine-tune vs replace the model?</p>
             </div>
-            <button class="toggle-solution" disabled>Solution Coming Soon 🚧</button>
+            <button class="toggle-solution" onclick="toggleSolution(9)">Show Solution ▼</button>
+            
+
+            <div class="solution-content" id="solution-9">
+                <div class="step-header">Understanding Model Drift</div>
+                <div class="solution-text">
+                    <p><strong>Model hasn't changed, but data distribution has:</strong></p>
+                    <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 20px; margin: 15px 0;">
+                        <p><strong>6 months ago (training data):</strong></p>
+                        <p style="margin-left: 20px;">"What's the weather?" "Set a reminder" "Tell me a joke"</p>
+                        
+                        <p style="margin-top: 15px;"><strong>Now (production queries):</strong></p>
+                        <p style="margin-left: 20px;">"How do I use the new AI features?" "What's the difference between Pro and Enterprise?"</p>
+                        
+                        <p style="margin-top: 15px; color: #c53030; font-weight: 600;">Model never trained on product-specific questions → high "I don't know" rate!</p>
+                    </div>
+                </div>
+                
+                <div class="recommendation-box">
+                    <div class="recommendation-title">✅ Three-Phase Solution</div>
+                    <div class="solution-text">
+                        <p><strong>Immediate (Week 1): Add RAG</strong></p>
+                        <p style="margin-left: 20px;">Retrieval Augmented Generation</p>
+                        <p style="margin-left: 20px;">Add product docs, FAQs to knowledge base</p>
+                        <p style="margin-left: 20px;">Model gets current context without retraining</p>
+                        
+                        <p style="margin-top: 15px;"><strong>Short-term (Month 1): Fine-tune with LoRA</strong></p>
+                        <p style="margin-left: 20px;">Collect recent 30 days of queries</p>
+                        <p style="margin-left: 20px;">Fine-tune on new question patterns</p>
+                        <p style="margin-left: 20px;">Cost: $1,000-5,000, Time: 1 week</p>
+                        
+                        <p style="margin-top: 15px;"><strong>Long-term (Month 2-3): Full Retrain</strong></p>
+                        <p style="margin-left: 20px;">80% original training data + 20% recent production</p>
+                        <p style="margin-left: 20px;">Cost: $50,000+, Time: 2-4 weeks</p>
+                        
+                        <p style="margin-top: 20px; font-weight: 700; color: #22543d;">Prevention: Quarterly retraining schedule to catch drift early!</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
         
         <div class="scenario-card">
@@ -562,7 +982,67 @@ aws elbv2 modify-target-group \
                 <p>Your company is deploying the chatbot for healthcare use (HIPAA compliance required). The model needs to run in a private VPC with no internet access. You also need to implement RAG (Retrieval Augmented Generation) to pull from a private medical knowledge base.</p>
                 <p style="margin-top: 15px;"><strong>Your task:</strong> Design a secure, compliant deployment. How do you handle model downloads, RAG integration, and logging while meeting regulatory requirements?</p>
             </div>
-            <button class="toggle-solution" disabled>Solution Coming Soon 🚧</button>
+            <button class="toggle-solution" onclick="toggleSolution(10)">Show Solution ▼</button>
+            
+
+            <div class="solution-content" id="solution-10">
+                <div class="step-header">HIPAA Architecture (Private VPC)</div>
+                <div class="solution-text">
+                    <div style="background: #f7fafc; border: 3px solid #667eea; padding: 25px; border-radius: 8px; margin: 20px 0;">
+                        <p style="font-weight: 700; font-size: 1.1em; color: #2d3748; margin-bottom: 15px;">Private VPC - No Internet Gateway</p>
+                        <div style="background: white; padding: 20px; border-radius: 8px; margin: 15px 0;">
+                            <strong>Components:</strong>
+                            <ul style="margin-left: 20px; margin-top: 10px;">
+                                <li>g5.xlarge with encrypted EBS volumes</li>
+                                <li>7B Model (vLLM) in private subnet</li>
+                                <li>Vector DB (Weaviate) for medical knowledge base</li>
+                                <li>Internal load balancer (no public IP)</li>
+                                <li>VPC endpoints for S3, CloudWatch (no internet)</li>
+                            </ul>
+                        </div>
+                        <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin-top: 15px;">
+                            <p style="font-weight: 600; color: #c53030;">Access: VPN or Direct Connect ONLY</p>
+                            <p style="margin-top: 5px;">No public internet access to or from VPC</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="recommendation-box">
+                    <div class="recommendation-title">✅ HIPAA Compliance Checklist</div>
+                    <div class="solution-text">
+                        <p><strong>Encryption:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>At rest: KMS encryption for EBS, S3, RDS</li>
+                            <li>In transit: TLS 1.3 for all connections</li>
+                            <li>PHI: All patient data encrypted</li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>Access Controls:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>IAM roles with least privilege</li>
+                            <li>MFA required for all users</li>
+                            <li>Audit logs (7-year retention for HIPAA)</li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>Model Deployment (No Internet):</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Upload model to S3 from internet-connected env</li>
+                            <li>Download via S3 VPC endpoint (stays in AWS network)</li>
+                            <li>Or use pre-baked AMI with model included</li>
+                        </ul>
+                        
+                        <p style="margin-top: 15px;"><strong>RAG Implementation:</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>Self-hosted Weaviate in same VPC</li>
+                            <li>Medical knowledge base encrypted</li>
+                            <li>All queries logged for audit</li>
+                        </ul>
+                        
+                        <p style="margin-top: 20px;"><strong>Additional Costs:</strong> ~$1,000-2,000/month for compliance overhead</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
     
